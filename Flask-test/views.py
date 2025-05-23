@@ -31,7 +31,7 @@ def home():
 # API rota
 @app.route("/api") # route 
 def gemini():
-    API_KEY = "AIzaSyBo9G4PyPKKbfxDnNu2QnHdDhB7kK_iQoc"
+    API_KEY = "SUA_API_KEY"
     # Carregando a variavel de sessão
     prompt = session.get('prompt')
 
