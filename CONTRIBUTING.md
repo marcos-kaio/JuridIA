@@ -56,17 +56,19 @@ Serão utilizados os seguintes nomes para as branches do projeto:
 ```bash
 $ sudo apt install node
 ``` 
-- Clonar o repositório.
+- Clone o repositório.
 - Entre no diretório do repositório
 ```bash
 $ cd JuridIA
 ``` 
 - Instale as dependências do sistema com
-
 ```bash
-$ npm install:all
+$ npm install
 ``` 
-- Rodar o projeto com
+```bash
+$ npm run install:all
+``` 
+- Rode o projeto com
 
 ```bash
 $ npm run start
