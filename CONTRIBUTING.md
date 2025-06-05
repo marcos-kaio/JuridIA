@@ -54,18 +54,22 @@ Serão utilizados os seguintes nomes para as branches do projeto:
 - Baixar o [node aqui](https://nodejs.org/en) ou instalar com o `sudo`.
 
 ```bash
-$ sudo apt install nodejs
+$ sudo apt install node
 ``` 
-- clonar o repositório.
-- Instale as dependências com 
+- Clonar o repositório.
+- Entre no diretório do repositório
+```bash
+$ cd JuridIA
+``` 
+- Instale as dependências do sistema com
 
 ```bash
-$ npm install
+$ npm install:all
 ``` 
 - Rodar o projeto com
 
 ```bash
-$ npm run dev
+$ npm run start
 ```
 - Abra no `localhost:3000`.
 
