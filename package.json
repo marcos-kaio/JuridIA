@@ -1,0 +1,29 @@
+{
+  "name": "juridia",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "install:react": "cd React && npm i",
+    "install:server": "cd Server && npm i",
+    "install:all": "npm run install:react && npm run install:server",
+
+    "start:react": "cd React && npm run dev",
+    "start:server":   "cd Server && npm start",
+    "start": "concurrently --raw \"FRONTEND,SERVER\" -c \"bgBlue.bold,bgGreen.bold\" \"npm run start:react\" \"npm run start:server\""
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://marcos-kaio@github.com/marcos-kaio/JuridIA.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/marcos-kaio/JuridIA/issues"
+  },
+  "homepage": "https://github.com/marcos-kaio/JuridIA#readme",
+  "devDependencies": {
+    "concurrently": "^9.1.2"
+  }
+}
