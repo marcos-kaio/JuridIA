@@ -1,4 +1,7 @@
-# Regras de Contribuição
+# Equipe 10 - JuridIA
+<br>
+
+## Regras de Contribuição
 
 ### Fluxo de Colaboração
 
@@ -10,7 +13,7 @@ Serão utilizados os seguintes nomes para as branches do projeto:
 
 - feature: \<nome da feature\>
 - bugfix: correção do \<nome do bug\>
-- docs: documento: \<nome do documento\> adicionado/alterado 
+- docs: \<nome do documento\> adicionado/alterado 
 
 ### Regras para revisar código
 
