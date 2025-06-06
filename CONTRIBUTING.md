@@ -54,7 +54,7 @@ Serão utilizados os seguintes nomes para as branches do projeto:
 - Baixar o [node aqui](https://nodejs.org/en) ou instalar com o `sudo`.
 
 ```bash
-$ sudo apt install node
+$ sudo apt install nodejs
 ``` 
 - Clone o repositório.
 - Entre no diretório do repositório
