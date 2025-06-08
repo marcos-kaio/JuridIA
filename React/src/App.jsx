@@ -1,11 +1,11 @@
-import './App.css'
+import LandingPage from './pages/LandingPage/LandingPage';
 
 function App() {
   return (
-    <>
-      <h1>Início da aplicação JuridIA</h1>
-    </>
-  )
+    <div className="App">
+      <LandingPage />
+    </div>
+  );
 }
 
-export default App
+export default App;
