@@ -78,10 +78,12 @@ export default function Chat() {
               value={message}
             />
             <div className="message-upload-area">
-              <button type="submit" className="upload btn">
-                <img src={PlusIcon} alt="adicionar documento" />
-                Adicione um Documento
-              </button>
+              <input
+                type="file"
+                name="documento"
+                id="documento"
+                accept="application/pdf"
+              />
             </div>
           </div>
           <button type="submit" value="" className="send" disabled={typing}>

@@ -29,7 +29,6 @@ function LandingPage() {
         responseType: "blob",
       });
       const url = URL.createObjectURL(resp.data);
-      //@ts-ignore
       setLink(url);
     } catch (err) {
       console.error("Erro ao enviar o arquivo:", err);
