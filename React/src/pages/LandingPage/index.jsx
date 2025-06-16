@@ -1,4 +1,4 @@
-import JuridiaLogo from "../../assets/juridia_logo.png";
+import Logo from "../../components/Logo";
 import MainPopUp from "../../components/MainPopUp";
 import "./styles.css";
 import { useState } from "react";
@@ -29,6 +29,7 @@ function LandingPage() {
         responseType: "blob",
       });
       const url = URL.createObjectURL(resp.data);
+      //@ts-ignore
       setLink(url);
     } catch (err) {
       console.error("Erro ao enviar o arquivo:", err);
@@ -42,11 +43,7 @@ function LandingPage() {
         {/* ===== HEADER ===== */}
         <header className="header">
           <div className="header-line"></div>
-          <img
-            className="header-logo"
-            src={JuridiaLogo}
-            alt="Logo da JuridIA"
-          />
+          <Logo />
           <nav className="header-nav">
             <a href="#" className="nav-link active">
               Home

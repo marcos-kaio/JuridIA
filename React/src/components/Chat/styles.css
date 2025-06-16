@@ -4,14 +4,15 @@
   display: flex;
   flex-direction: column;
   justify-content: center;
-  border: 1px solid red;
-  padding: 20px;
 }
 
 .message-area {
   flex: 1;
-  border: 1px solid blue;
-  margin: 16px;
+  overflow: auto;
+}
+
+footer.input-area {
+  border-top: 1px solid var(--base-shadow);
 }
 
 .message-form .wrapper {
@@ -26,5 +27,70 @@
 }
 
 .message-form .send {
-  width: 120px;
+  border: none;
+  border-radius: 100%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.message-form {
+  padding: 10px;
+  border-radius: var(--base-radius);
+}
+
+.messages {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 48px;
+  padding: 24px;
+}
+
+.messages .bot,
+.user {
+  width: fit-content;
+  max-width: 100%;
+  padding: 10px 18px 10px 18px;
+  border-radius: calc(var(--base-radius) + 4px);
+}
+
+.messages .bot {
+  background-color: var(--blue-bright);
+  color: white;
+  margin-right: auto;
+}
+
+.messages li.user {
+  margin-left: auto;
+  background-color: var(--gray-light);
+}
+
+.message-upload-area .upload {
+  font-weight: 400;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+
+.message-form .wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding-left: 10px;
+}
+
+.message-upload-area img {
+  width: 16px;
+}
+
+.message-form .message-input {
+  font-family: "Poppins", sans-serif;
+  border: none;
+  font-size: 16px;
+  padding: 10px;
+  background-color: var(--gray-light);
 }
