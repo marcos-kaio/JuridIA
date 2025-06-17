@@ -59,6 +59,7 @@ $ sudo apt install nodejs
 - Clone o repositório.
 - Entre no diretório do repositório
 ```bash
+$ git clone https://github.com/marcos-kaio/JuridIA.git
 $ cd JuridIA
 ``` 
 - Instale as dependências do sistema com
