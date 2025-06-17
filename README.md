@@ -47,7 +47,7 @@ Automatiza processos jurídicos combinando **frontend em React + Vite** com **ba
 - Abra no `localhost:3000`.
 
 ## Estrutura de pastas
-    ```bash
+
     JuridIA/
 ├── React/                    #Frontend em React com Vite
 │   ├── node_modules/         #Dependências do frontend
