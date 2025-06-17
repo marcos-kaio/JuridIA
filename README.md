@@ -76,4 +76,3 @@ Automatiza processos jurídicos combinando **frontend em React + Vite** com **ba
 ├── package-lock.json         #Controle de versões das dependências da raiz
 ├── package.json              #Dependências e scripts gerais
 └── README.md                 #Documentação principal do projeto
-    ```
