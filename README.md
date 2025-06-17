@@ -14,29 +14,29 @@ Automatiza processos jurídicos combinando **frontend em React + Vite** com **ba
 
 ---
 
-## Como instalar
+## Como configurar o projeto localmente
 
-1. Clone o repositório:
+1. Instalar o node:
+    
+    - Baixar o [node aqui](https://nodejs.org/en) ou instalar com o `sudo`.
+
+    ```bash
+    sudo apt install nodejs
+    ```
+
+2. Instalar as dependências do sistema:
+    ```bash
+    npm install
+    ``` 
+    ```bash
+    npm run install:all
+    ```     
+
+3. Clone o repositório e entre no mesmo:
    ```bash
    git clone https://github.com/marcos-kaio/JuridIA.git
    cd JuridIA
    ```
-2. Instale as dependências do frontend:
-    ```bash
-    cd React
-    npm install
-
-3. Instale as dependências do backend:
-    ```bash
-    cd ../Server
-    npm install
-
-4. Instale as ferramentas auxiliares na raiz do projeto:
-    ```bash
-    cd ..
-    npm install
-    npm install --save-dev concurrently+
-    ```
 
 ## Como rodar
 
@@ -44,6 +44,7 @@ Automatiza processos jurídicos combinando **frontend em React + Vite** com **ba
     ```bash
     npm start
     ```
+- Abra no `localhost:3000`.
 
 ## Estrutura de pastas
     ```bash
