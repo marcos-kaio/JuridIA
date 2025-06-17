@@ -47,7 +47,7 @@ Automatiza processos jurídicos combinando **frontend em React + Vite** com **ba
 - Abra no `localhost:3000`.
 
 ## Estrutura de pastas
-
+```
     JuridIA/
 ├── React/                    #Frontend em React com Vite
 │   ├── node_modules/         #Dependências do frontend
@@ -76,3 +76,4 @@ Automatiza processos jurídicos combinando **frontend em React + Vite** com **ba
 ├── package-lock.json         #Controle de versões das dependências da raiz
 ├── package.json              #Dependências e scripts gerais
 └── README.md                 #Documentação principal do projeto
+```
