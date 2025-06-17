@@ -2,13 +2,12 @@ import Logo from "../../components/Logo";
 import MainPopUp from "../../components/MainPopUp";
 import "./styles.css";
 import { useState } from "react";
-import axios from "axios";
+import useGemini from "../../hooks/useGemini";
 
 function LandingPage() {
+  const { error, link, loading, send } = useGemini();
   const [isPopupOpen, setIsPopupOpen] = useState(false); // define se o popup está aberto ou não
   const [file, setFile] = useState(); // arquivo a ser enviado
-  const [loading, setLoading] = useState(false); // carregamento de envio
-  const [link, setLink] = useState(); // link final de download
 
   // funções para controlar popup:
   const abrirPopup = () => {
@@ -18,23 +17,12 @@ function LandingPage() {
     setIsPopupOpen(false);
   };
 
-  // funções para enviar o arquivo:
-
-  const sendFile = async () => {
-    setLoading(true);
-    const form = new FormData();
-    form.append("file", file);
-    try {
-      const resp = await axios.post("http://localhost:8081/simplify", form, {
-        responseType: "blob",
-      });
-      const url = URL.createObjectURL(resp.data);
-      setLink(url);
-    } catch (err) {
-      console.error("Erro ao enviar o arquivo:", err);
+  function sendFile() {
+    send(File);
+    if (error.length > 0) {
+      console.log(error);
     }
-    setLoading(false);
-  };
+  }
 
   return (
     <>
