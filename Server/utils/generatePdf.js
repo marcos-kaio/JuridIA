@@ -22,7 +22,11 @@ export async function generatePdf(text) {
 
   // Retorna uma Promise que resolve com o Buffer do PDF
   return new Promise((resolve, reject) => {
-    pdf.create(html, { format: "A4" }).toBuffer((err, buffer) => {
+    pdf.create(html, { format: "A4", childProcessOptions: {
+      env: {
+        OPENSSL_CONF: '/dev/null'
+      }
+    } }).toBuffer((err, buffer) => {
       if (err) return reject(err);
       resolve(buffer);
     });
