@@ -23,6 +23,11 @@ export default (sequelize) =>
         type: DataTypes.BLOB("long"),
         field: "simplified_url",
       },
+      originalText: {
+        type: DataTypes.TEXT("long"),
+        allowNull: true,
+        field: "original_text",
+      },
       status: {
         type: DataTypes.STRING(10),
         field: "status",

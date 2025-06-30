@@ -33,8 +33,8 @@ export const Document = defineDocument(sequelize);
 export const Chat = defineChat(sequelize);
 
 // definindo associações
-User.hasMany(Document, { foreingKey: "user_id" });
-Document.belongsTo(User, { foreingKey: "user_id" });
+User.hasMany(Document, { foreignKey: "user_id" });
+Document.belongsTo(User, { foreignKey: "user_id" });
 
-Document.hasMany(Chat, { foreingKey: "document_id" });
-Chat.belongsTo(Document, { foreingKey: "document_id" });
+Document.hasMany(Chat, { foreignKey: "document_id" });
+Chat.belongsTo(Document, { foreignKey: "document_id" });

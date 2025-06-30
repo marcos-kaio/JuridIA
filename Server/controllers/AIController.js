@@ -1,6 +1,7 @@
 import { callGemini } from "../services/geminiService.js";
 import { generatePdf } from "../utils/generatePdf.js";
 import { Document } from "../models/db.js";
+import pdfParse from "pdf-parse/lib/pdf-parse.js";
 
 export default async function AIControler(req, res) {
   let doc;
@@ -9,11 +10,14 @@ export default async function AIControler(req, res) {
     // requere userId para armazenar o documento - estrutura de teste por enquanto
     const userId = Number(req.body.userId);
 
+    const { text: originalText } = await pdfParse(pdfBuffer); // extrai texto do pdf
+
     // aloca informações iniciais na tabela
     doc = await Document.create({
       userId,
       originalUrl: pdfBuffer,
-      simplifiedUrl: null,
+      simplifiedUrl: null,  
+      originalText,
       status: "processing",
     });
 
