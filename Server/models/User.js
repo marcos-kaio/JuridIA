@@ -18,7 +18,11 @@ export default (sequelize) =>
       email: {
         type: DataTypes.STRING(255),
         allowNull: false,
+        unique: true,
         field: "user_email",
+        validate: {
+          isEmail: true,
+        },
       },
       birthday: {
         type: DataTypes.DATEONLY,
