@@ -63,7 +63,7 @@ function LandingPage() {
                 Transforme juridiquês em linguagem simples e visual<br />
                 <span className="highlight-text bold">Rápido, seguro e direto na palma da sua mão.</span>
               </p>
-              <button className="btn-hero">Comece agora!</button>
+              <Link to="/chat" className="btn-hero">Comece agora!</Link>
             </div>
             {/* A imagem do personagem/ilustração iria aqui */}
           </section>

@@ -1,0 +1,231 @@
+/* Estrutura Principal da Página */
+.chat-page {
+  width: 100vw;
+  height: 100vh;
+  background: #1F2A44;
+  display: flex;
+  overflow: hidden; /* Previne barras de rolagem na página inteira */
+}
+
+/* Barra Lateral (Conversas) */
+.sidebar {
+  flex: 0 0 260px; /* Largura fixa, não cresce nem encolhe */
+  background: #1F2A44;
+  padding: 20px 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  border-right: 1px solid #323f58;
+}
+
+.sidebar-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 15px;
+}
+
+.user-icon svg {
+  width: 64px;
+  height: 64px;
+}
+
+.new-chat-button {
+  width: 100%;
+  padding: 12px;
+  background: #F4F7FB;
+  border-radius: 10px;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  font-size: 18px;
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 500;
+  transition: background-color 0.2s;
+}
+
+.new-chat-button:hover {
+  background-color: #e1e7f0;
+}
+
+.conversation-list {
+  flex-grow: 1; /* Ocupa todo o espaço vertical disponível */
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  overflow-y: auto; /* Adiciona barra de rolagem se as conversas excederem a altura */
+}
+
+.conversation-item {
+  width: 100%;
+  padding: 15px;
+  background: #F4F7FB;
+  border-radius: 10px;
+  border: 2px solid #0DACAC;
+  text-align: center;
+  color: #0DACAC;
+  font-size: 18px;
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.conversation-item.active {
+  background: #0DACAC;
+  color: #F4F7FB;
+  border-color: #F4F7FB;
+}
+
+.sidebar-footer {
+  margin-top: auto; /* Empurra o footer para o final */
+  padding-left: 10px;
+}
+
+/* Área Principal do Chat */
+.chat-area {
+  flex-grow: 1; /* Ocupa todo o resto da tela */
+  background: #F4F7FB;
+  border-radius: 10px;
+  margin: 20px;
+  margin-left: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border: 2px solid #007B9E;
+}
+
+.chat-header {
+  padding: 15px 25px;
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  border-bottom: 1px solid #007B9E;
+}
+
+.bot-name {
+  color: #007B9E;
+  font-size: 28px;
+  font-family: 'Poppins', sans-serif;
+  font-weight: 700;
+  margin: 0;
+}
+
+.bot-status {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #0DE20D;
+}
+
+.status-indicator {
+  width: 12px;
+  height: 12px;
+  background-color: #0DE20D;
+  border-radius: 50%;
+}
+
+/* Lista de Mensagens */
+.message-list {
+  flex-grow: 1;
+  padding: 30px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.message-container {
+  display: flex;
+  width: 100%;
+}
+
+.bot-message-container {
+  justify-content: flex-start; /* Alinha mensagens do bot à esquerda */
+}
+
+.message-container:not(.bot-message-container) {
+  justify-content: flex-end; /* Alinha mensagens do usuário à direita */
+}
+
+.message {
+  max-width: 75%;
+  padding: 15px 20px;
+  border-radius: 15px;
+  font-size: 16px;
+  line-height: 1.5;
+}
+
+.bot-message {
+  background: #0DACAC;
+  color: white;
+  border-top-left-radius: 0;
+}
+
+.user-message {
+  background: #E2E8F0;
+  color: black;
+  border-top-right-radius: 0;
+}
+
+/* Rodapé (Campo de Entrada) */
+.chat-footer {
+  padding: 20px 30px;
+  background: #F4F7FB; /* Mesmo fundo da área de chat para integração */
+}
+
+.entry-field-wrapper {
+  display: flex;
+  align-items: center;
+  background: white;
+  border: 1px solid #007B9E;
+  border-radius: 20px;
+  padding: 5px 5px 5px 20px;
+}
+
+.entry-field {
+  flex-grow: 1;
+  border: none;
+  background: transparent;
+  padding: 10px 0;
+  font-size: 16px;
+}
+
+.entry-field:focus {
+  outline: none;
+}
+
+.send-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 46px;
+  height: 46px;
+  background-color: #0DACAC;
+  border-radius: 50%;
+  border: none;
+  cursor: pointer;
+}
+.send-button svg path {
+  stroke: white;
+}
+
+/* ======================================= */
+/* ===== MEDIA QUERIES (RESPONSIVO) ===== */
+/* ======================================= */
+
+@media (max-width: 768px) {
+  .sidebar {
+    /* Em telas de celular, a barra lateral é escondida por padrão */
+    display: none; 
+  }
+
+  .chat-area {
+    margin: 0;
+    border-radius: 0;
+    border: none;
+    height: 100vh;
+  }
+}
