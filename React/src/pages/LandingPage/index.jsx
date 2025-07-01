@@ -1,24 +1,22 @@
 import JuridiaLogo from '../../assets/juridia_logo.png';
 import MainPopUp from '../../components/MainPopUp';
 import './LandingPage.css';
-import {useState} from 'react';
+import { useState } from 'react';
 import axios from 'axios';
+import { Link } from 'react-router-dom'; 
 
 function LandingPage() {
-  const [isPopupOpen, setIsPopupOpen] = useState(false); // define se o popup está aberto ou não
-  const [file, setFile] = useState(); // arquivo a ser enviado
-  const [loading, setLoading] = useState(false); // carregamento de envio
-  const [link, setLink] = useState(); // link final de download
+  const [isPopupOpen, setIsPopupOpen] = useState(false);
+  const [file, setFile] = useState();
+  const [loading, setLoading] = useState(false);
+  const [link, setLink] = useState();
 
-  // funções para controlar popup:
   const abrirPopup = () => {
     setIsPopupOpen(true);
   };
   const fecharPopup = () => {
     setIsPopupOpen(false);
   };
-
-  // funções para enviar o arquivo:
 
   const sendFile = async () => {
     setLoading(true)
@@ -50,8 +48,9 @@ function LandingPage() {
             <a href="#" className="nav-link">FAQ</a>
           </nav>
           <div className="header-actions">
-            <button className="btn btn-primary">Entrar</button>
-            <button className="btn btn-secondary">Cadastre-se</button>
+            {/* O botão "Entrar" agora é um Link */}
+            <Link to="/login" className="btn btn-primary">Entrar</Link>
+            <Link to="/register" className="btn btn-secondary">Cadastre-se</Link>
           </div>
         </header>
 
@@ -64,7 +63,7 @@ function LandingPage() {
                 Transforme juridiquês em linguagem simples e visual<br />
                 <span className="highlight-text bold">Rápido, seguro e direto na palma da sua mão.</span>
               </p>
-              <button className="btn-hero">Comece agora!</button>
+              <Link to="/chat" className="btn-hero">Comece agora!</Link>
             </div>
             {/* A imagem do personagem/ilustração iria aqui */}
           </section>

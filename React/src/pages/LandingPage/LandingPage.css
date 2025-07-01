@@ -60,6 +60,7 @@
   border-radius: 5px;
   cursor: pointer;
   border: none;
+  text-decoration: none;
 }
 
 .btn-primary {
@@ -119,6 +120,8 @@
   border: none;
   padding: 16px 80px;
   cursor: pointer;
+  text-decoration: none;
+
 }
 
 /* --- SEÇÕES PADRÃO --- */
