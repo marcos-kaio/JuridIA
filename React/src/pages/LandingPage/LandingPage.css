@@ -60,6 +60,7 @@
   border-radius: 5px;
   cursor: pointer;
   border: none;
+  text-decoration: none;
 }
 
 .btn-primary {
