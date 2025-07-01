@@ -24,3 +24,17 @@ export async function callGemini(pdfBuffer) {
 
   return response.text;
 }
+
+export async function chatWithGemini(messages) {
+  const contents = messages.map((m) => ({
+    role: m.role,
+    text: m.text,
+  }));
+
+  const response = await ai.models.generateContent({
+    model: "gemini-2.0-flash",
+    contents,
+  });
+
+  return response.text;
+}

@@ -1,20 +1,22 @@
 import express from "express";
 import cors from "cors";
-import multer from "multer";
-import dotenv from "dotenv";
-import AIControler from './controllers/AIController.js';
-
-dotenv.config();
+import documentRoutes from './routes/documentRoutes.js';
+import userRoutes from './routes/userRoutes.js';
+import chatRoutes from './routes/chatRoutes.js';
+import { requireAuth } from "./middlewares/auth.js";
 
 const app = express();
+app.use(express.json());
 app.use(cors());
 
 const port = 8081;
 
-// armazena upload temporariamente num espaço da memória
-const upload = multer({ storage: multer.memoryStorage() });
+app.use('/document', requireAuth, documentRoutes);
+app.use('/user', userRoutes);
+app.use('/chat', requireAuth, chatRoutes);
 
-app.post('/simplify', upload.single('file'), AIControler);
+// ordem da estrutura de envio de requisição para cadastro de usuário:
+// { username, email, birthday, escolaridade, password }
 
 app.listen(port, () => {
   console.log(`Running on port ${port}`);
