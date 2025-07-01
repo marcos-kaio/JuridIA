@@ -1,5 +1,11 @@
-import express from 'express';
+import express from "express";
 import { User } from "../models/db.js";
+import dotenv from "dotenv";
+import jwt from "jsonwebtoken";
+import bcrypt from "bcrypt";
+const saltRounds = 10;
+
+dotenv.config();
 
 const router = express.Router();
 router.use(express.json());
@@ -24,13 +30,16 @@ router.post("/register", async (req, res) => {
         .json({ error: "E-mail já existente, tente outro!" });
     }
 
+    // criptografia da senha
+    const passwordHash = await bcrypt.hash(password, saltRounds);
+
     // alocação de informações de novo usuário
     const newUser = await User.create({
       username,
       email,
       birthday,
       escolaridade,
-      password,
+      password: passwordHash,
     });
 
     return res.status(201).json({
@@ -43,6 +52,30 @@ router.post("/register", async (req, res) => {
     console.error("Erro ao criar usuário:", err);
     return res.status(500).json({ "Erro interno ao cadastrar usuário": err });
   }
+});
+
+// fazer login - /user/login
+router.post("/login", async (req, res) => {
+  const { email, password } = req.body;
+  if (!email || !password)
+    return res.status(400).json({ error: "Email e senha são obrigatórios." });
+
+  // confere email
+  const user = await User.findOne({ where: { email } });
+  if (!user) return res.status(401).json({ error: "Credenciais inválidas." });
+
+  // compara senha
+  const match = await bcrypt.compare(password, user.password);
+  if (!match) return res.status(401).json({ error: "Credenciais inválidas." });
+
+  const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET, {
+    expiresIn: "1h",
+  });
+
+  res.json({
+    token,
+    user: { id: user.id, username: user.username, email: user.email },
+  });
 });
 
 // -- inclusão de atualização de informações de user --

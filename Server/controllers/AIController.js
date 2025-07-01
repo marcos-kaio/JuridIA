@@ -16,12 +16,12 @@ export default async function AIControler(req, res) {
     doc = await Document.create({
       userId,
       originalUrl: pdfBuffer,
-      simplifiedUrl: null,  
+      simplifiedUrl: null,
       originalText,
       status: "processing",
     });
 
-    const simplifiedText = await callGemini(doc.originalUrl); // envia pdf para a API
+    const simplifiedText = await callGemini(pdfBuffer); // envia pdf para a API
     const outPdfBuffer = await generatePdf(simplifiedText); // transforma texto simplificado em pdf
 
     // atualiza banco de dados com blob do pdf simplificado
@@ -34,7 +34,7 @@ export default async function AIControler(req, res) {
     res
       .header("Content-Type", "application/pdf")
       .header("Content-Disposition", 'attachment; filename="simplificado.pdf"')
-      .send(doc.simplifiedUrl);
+      .send(outPdfBuffer);
   } catch (err) {
     console.error("simplifyController error:", err);
     res.status(500).json({ error: "Erro ao simplificar o documento." });
