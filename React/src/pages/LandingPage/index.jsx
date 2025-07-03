@@ -1,7 +1,6 @@
 import JuridiaLogo from '../../assets/juridia_logo.png';
 import MainPopUp from '../../components/MainPopUp';
 import { Button, Title } from '../../components/utilities';
-import './LandingPage.css';
 import { useState } from 'react';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
@@ -92,8 +91,8 @@ function LandingPage() {
 
             {/* ===== CONTRACT SIMPLIFIER SECTION ===== */}
             <section className='flex flex-col items-center justify-center px-10 pt-20 text-center gap-4'>
-              <Title size='4'>Simplifique seu contrato</Title>
-              <p className='w-ful mb-4 max-w-xl'>
+              <Title size={4}>Simplifique seu contrato</Title>
+              <p className='w-full mb-4 max-w-xl '>
                 Faça o upload do seu contrato em formato pdf ou .txt e nossa
                 Inteligência Artificial irá fornecer uma explicação clara e
                 concisa dos termos mais importantes.

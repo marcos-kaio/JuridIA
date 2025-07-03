@@ -243,13 +243,14 @@ export const Title = ({
   bold = false,
   ...rest
 }) => {
+  size = Number(size);
   const clamped = Math.max(1, Math.min(size, 9));
   const actualSize = clamped == 1 ? '' : `${clamped}`;
   return (
     <h1
       className={`font-${
         bold ? `bold` : `medium`
-      } text-${actualSize}xl text-blue-950 ${className}`}
+      } text-${actualSize}xl text-blue-950 ${className ?? ''}`}
       {...rest}
     >
       {children}
