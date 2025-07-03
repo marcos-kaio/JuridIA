@@ -7,12 +7,12 @@ import ChatPage from './pages/ChatPage';
 function App() {
   return (
     <Router>
-      <div className="App">
+      <div className='App'>
         <Routes>
-          <Route path="/" element={<LandingPage />} />
-          <Route path="/login" element={<LoginPage />} />
-          <Route path="/register" element={<RegisterPage />} />
-          <Route path="/chat" element={<ChatPage />} />
+          <Route path='/' element={<LandingPage />} />
+          <Route path='/login' element={<LoginPage />} />
+          <Route path='/register' element={<RegisterPage />} />
+          <Route path='/chat' element={<ChatPage />} />
         </Routes>
       </div>
     </Router>
