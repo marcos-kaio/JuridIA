@@ -1,64 +1,49 @@
-import {
-  EmailIcon,
-  PasswordIcon,
-  InputField,
-  InputIcon,
-  InputContainer,
-  Button,
-} from '../../components/utilities';
-
 // Um componente simples para a ilustração, para manter o código limpo
 const LoginIllustration = () => (
-  <div className='max-w-2xl'>
-    {/* A ilustração (SVG complexo) pode ser inserida aqui ou como um <img> */}
-    <p style={{ fontSize: '2rem', color: 'white' }}>Ilustração aqui</p>
+  <div className="max-w-[600px]">
+    <p className="text-3xl text-white">Ilustração aqui</p>
   </div>
 );
 
 const LoginPage = () => {
   return (
-    <div className='w-full min-h-dvh grid grid-cols-1 lg:grid-cols-[45%_55%] max-w-[100vw]'>
-      <div className='hidden lg:flex items-center justify-center bg-blue-950 max-w-[900px]'>
+    <div className="flex w-full min-h-screen font-sans">
+      {/* Coluna da Esquerda (Ilustração) - Escondida em telas menores que lg */}
+      <div className="hidden lg:flex lg:w-[47%] bg-[#1F2A44] justify-center items-center">
         <LoginIllustration />
       </div>
 
       {/* Coluna da Direita (Formulário) */}
-      <div className='flex items-center justify-center w-full h-full'>
-        <div className='flex flex-col justify-center items-center p-5 lg:p-10 gap-5 max-w-2xl lg:max-w-lg w-full'>
-          <div className='w-full'>
-            <h1 className='text-5xl text-blue-950 mb-3 font-bold'>Login</h1>
-            <p className='text-gray-500 text-sm font-light'>
-              Acesse sua conta usando e-mail e senha
-            </p>
-          </div>
+      <div className="w-full lg:w-[53%] bg-[#F4F7FB] flex flex-col justify-center items-center p-5 box-border gap-5">
 
-          <InputContainer>
-            <InputIcon>
-              <EmailIcon />
-            </InputIcon>
-            <InputField type='email' placeholder='Digite seu E-mail' />
-          </InputContainer>
-
-          <InputContainer>
-            <InputIcon>
-              <PasswordIcon />
-            </InputIcon>
-            <InputField type='password' placeholder='Digite sua senha' />
-          </InputContainer>
-
-          <a href='#' className='text-blue-950 underline'>
-            Esqueci a senha
-          </a>
-
-          <Button>Login</Button>
-
-          <div className='text-center'>
-            <span className='text-blue-950'>Não tem uma conta? </span>
-            <a href='/register' className='text-cyan-600 underline'>
-              Cadastre-se
-            </a>
-          </div>
+        <div className="w-full max-w-[430px] text-left">
+          <h1 className="text-[#1F2A44] text-5xl font-bold font-montserrat mb-2.5">Login</h1>
+          <p className="text-[#A0A0A0] text-base font-light">Acesse sua conta usando e-mail e senha</p>
         </div>
+
+        <div className="relative w-full max-w-[430px]">
+          <div className="absolute left-4 top-1/2 -translate-y-1/2 pointer-events-none">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M4 4H20C21.1 4 22 4.9 22 6V18C22 19.1 21.1 20 20 20H4C2.9 20 2 19.1 2 18V6C2 4.9 2.9 4 4 4Z" stroke="#AFAFAF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/><path d="M22 6L12 13L2 6" stroke="#AFAFAF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
+          </div>
+          <input type="email" placeholder="Digite seu E-mail" className="w-full py-5 px-12 text-lg bg-[rgba(229,229,230,0.81)] border border-gray-300 rounded-md focus:outline-none focus:border-[#0DACAC]" />
+        </div>
+
+        <div className="relative w-full max-w-[430px]">
+          <div className="absolute left-4 top-1/2 -translate-y-1/2 pointer-events-none">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="3" y="11" width="18" height="11" rx="2" ry="2" stroke="#AFAFAF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/><path d="M7 11V7C7 4.23858 9.23858 2 12 2C14.7614 2 17 4.23858 17 7V11" stroke="#AFAFAF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
+          </div>
+          <input type="password" placeholder="Digite sua senha" className="w-full py-5 px-12 text-lg bg-[rgba(229,229,230,0.81)] border border-gray-300 rounded-md focus:outline-none focus:border-[#0DACAC]" />
+        </div>
+
+        <a href="#" className="w-full max-w-[430px] text-right text-[#1F2A44] text-base underline">Esqueci a senha</a>
+
+        <button className="w-full max-w-[430px] p-5 bg-[#0DACAC] text-white text-3xl font-medium rounded-2xl cursor-pointer hover:bg-[#089a9a] transition-colors">Login</button>
+        
+        <div className="text-center text-base">
+          <span className="text-[#1f2a44]">Não tem uma conta? </span>
+          <a href="/register" className="text-[#007B9E] no-underline">Cadastre-se</a>
+        </div>
+
       </div>
     </div>
   );

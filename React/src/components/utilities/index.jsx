@@ -377,17 +377,27 @@ export const Title = ({
   bold = false,
   ...rest
 }) => {
-  size = Number(size);
-  const clamped = Math.max(1, Math.min(size, 9));
-  const actualSize = clamped == 1 ? '' : `${clamped}`;
+  const sizeClasses = {
+    1: 'text-xl',
+    2: 'text-2xl',
+    3: 'text-3xl',
+    4: 'text-4xl',
+    5: 'text-5xl',
+    6: 'text-6xl',
+    7: 'text-7xl',
+    8: 'text-8xl',
+    9: 'text-9xl',
+  };
+
+  const clampedSize = Math.max(1, Math.min(Number(size), 9));
+
   return (
     <h1
-      className={`font-${
-        bold ? `bold` : `medium`
-      } text-${actualSize}xl text-blue-950 ${className ?? ''}`}
+      className={`font-${bold ? 'bold' : 'medium'} ${sizeClasses[clampedSize]} text-blue-950 ${className ?? ''}`}
       {...rest}
     >
       {children}
     </h1>
   );
 };
+
