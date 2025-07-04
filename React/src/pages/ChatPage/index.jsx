@@ -1,4 +1,3 @@
-import './ChatPage.css';
 import {
   Button,
   ChatBotIcon,
