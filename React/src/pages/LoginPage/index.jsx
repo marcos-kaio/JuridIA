@@ -1,52 +1,47 @@
-import './LoginPage.css';
-
 // Um componente simples para a ilustração, para manter o código limpo
 const LoginIllustration = () => (
-  <div className="illustration-container">
-    {/* A ilustração (SVG complexo) pode ser inserida aqui ou como um <img> */}
-    <p style={{ fontSize: '2rem', color: 'white' }}>Ilustração aqui</p>
+  <div className="max-w-[600px]">
+    <p className="text-3xl text-white">Ilustração aqui</p>
   </div>
 );
 
 const LoginPage = () => {
   return (
-    <div className="login-page">
-      {/* Coluna da Esquerda (Ilustração) - Será escondida em telas pequenas */}
-      <div className="login-content-field">
+    <div className="flex w-full min-h-screen font-sans">
+      {/* Coluna da Esquerda (Ilustração) - Escondida em telas menores que lg */}
+      <div className="hidden lg:flex lg:w-[47%] bg-[#1F2A44] justify-center items-center">
         <LoginIllustration />
       </div>
 
       {/* Coluna da Direita (Formulário) */}
-      <div className="login-form-container">
-        
-        <div className="form-header">
-          <h1 className="form-title">Login</h1>
-          <p className="form-subtitle">Acesse sua conta usando e-mail e senha</p>
+      <div className="w-full lg:w-[53%] bg-[#F4F7FB] flex flex-col justify-center items-center p-5 box-border gap-5">
+
+        <div className="w-full max-w-[430px] text-left">
+          <h1 className="text-[#1F2A44] text-5xl font-bold font-montserrat mb-2.5">Login</h1>
+          <p className="text-[#A0A0A0] text-base font-light">Acesse sua conta usando e-mail e senha</p>
         </div>
 
-        <div className="input-wrapper">
-          <div className="input-icon">
-            {/* Ícone de Email */}
+        <div className="relative w-full max-w-[430px]">
+          <div className="absolute left-4 top-1/2 -translate-y-1/2 pointer-events-none">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M4 4H20C21.1 4 22 4.9 22 6V18C22 19.1 21.1 20 20 20H4C2.9 20 2 19.1 2 18V6C2 4.9 2.9 4 4 4Z" stroke="#AFAFAF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/><path d="M22 6L12 13L2 6" stroke="#AFAFAF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
           </div>
-          <input type="email" placeholder="Digite seu E-mail" className="input-field" />
+          <input type="email" placeholder="Digite seu E-mail" className="w-full py-5 px-12 text-lg bg-[rgba(229,229,230,0.81)] border border-gray-300 rounded-md focus:outline-none focus:border-[#0DACAC]" />
         </div>
 
-        <div className="input-wrapper">
-          <div className="input-icon">
-            {/* Ícone de Senha */}
+        <div className="relative w-full max-w-[430px]">
+          <div className="absolute left-4 top-1/2 -translate-y-1/2 pointer-events-none">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="3" y="11" width="18" height="11" rx="2" ry="2" stroke="#AFAFAF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/><path d="M7 11V7C7 4.23858 9.23858 2 12 2C14.7614 2 17 4.23858 17 7V11" stroke="#AFAFAF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
           </div>
-          <input type="password" placeholder="Digite sua senha" className="input-field" />
+          <input type="password" placeholder="Digite sua senha" className="w-full py-5 px-12 text-lg bg-[rgba(229,229,230,0.81)] border border-gray-300 rounded-md focus:outline-none focus:border-[#0DACAC]" />
         </div>
 
-        <a href="#" className="forgot-password-link">Esqueci a senha</a>
+        <a href="#" className="w-full max-w-[430px] text-right text-[#1F2A44] text-base underline">Esqueci a senha</a>
 
-        <button className="login-button">Login</button>
+        <button className="w-full max-w-[430px] p-5 bg-[#0DACAC] text-white text-3xl font-medium rounded-2xl cursor-pointer hover:bg-[#089a9a] transition-colors">Login</button>
         
-        <div className="signup-link">
-          <span className="text-dark">Não tem uma conta? </span>
-          <a href="/register" className="text-link">Cadastre-se</a>
+        <div className="text-center text-base">
+          <span className="text-[#1f2a44]">Não tem uma conta? </span>
+          <a href="/register" className="text-[#007B9E] no-underline">Cadastre-se</a>
         </div>
 
       </div>
