@@ -85,7 +85,6 @@ router.post("/login", async (req, res) => {
 
 // verifica se token é válido
 router.get("/me", requireAuth, (req, res) => {
-  console.log("foi")
   User.findByPk(req.user.id, { attributes: ["id", "username", "email"] })
     .then((user) => res.json(user))
     .catch(() => res.status(500).end());

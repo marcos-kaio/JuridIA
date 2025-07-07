@@ -1,30 +1,43 @@
-import api from "./api.js"
+import api from "./api.js";
 
 export const getChats = async () => {
-    try{
-        const chats = await api.get("http://localhost:8081/chat/find");
-        return chats;
-    } catch(err){
-        console.error("Erro ao buscar chats: ", err)
-    }
-}
+  try {
+    const chats = await api.get("http://localhost:8081/chat/find");
+    return chats;
+  } catch (err) {
+    console.error("Erro ao buscar chats: ", err);
+  }
+};
 
 export const getChathistory = async (docId) => {
-    try{
-        const chatHistory = await api.get(`http://localhost:8081/chat/${docId}`);
-        return chatHistory;
-    } catch(err){
-        console.error("Erro ao buscar histórico de chat: ", err)
-    }
-}
+  try {
+    const chatHistory = await api.get(`http://localhost:8081/chat/${docId}`);
+    return chatHistory;
+  } catch (err) {
+    console.error("Erro ao buscar histórico de chat: ", err);
+  }
+};
 
 export const sendMessage = async (docId, userMessage) => {
-    try{
-        const answer = await api.post(`http://localhost:8081/chat/ask/${docId}`, {
-            question: userMessage
-        });
-        return answer;
-    } catch(err){
-        console.error("Erro ao enviar mensagem: ", err)
-    }
-}
+  try {
+    const answer = await api.post(`http://localhost:8081/chat/ask/${docId}`, {
+      question: userMessage,
+    });
+    return answer;
+  } catch (err) {
+    console.error("Erro ao enviar mensagem: ", err);
+  }
+};
+
+export const uploadAndSimplifyPdf = async (formData) => {
+  try {
+    return await api.post(
+      `http://localhost:8081/document/simplify`,
+      formData,
+      { headers: { "Content-Type": "multipart/form-data" } },
+      { responseType: "blob" }
+    );
+  } catch (err) {
+    console.error("Erro ao enviar e simplificar arquivo: ", err);
+  }
+};

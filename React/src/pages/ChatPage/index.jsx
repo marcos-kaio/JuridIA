@@ -1,6 +1,6 @@
 import { useEffect, useState, useMemo, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { getChats, getChathistory, sendMessage } from '../../services/chatService';
+import { getChats, getChathistory, sendMessage, uploadAndSimplifyPdf } from '../../services/chatService';
 // biblioteca que converte markdown para html
 import ReactMarkdown from "react-markdown";
 
@@ -35,14 +35,24 @@ const BotMessage = ({botContent}) => {
   )
 }
 
-const SendPdf = ({OnFileChange, file}) => {
+const SendPdf = ({OnFileChange, file, OnSimplify, isLoading}) => {
+  const isFileSelected = file !== "Nenhum arquivo selecionado";
+
   return (
     <div className="flex justify-end w-full">
       <div className="max-w-[75%] py-4 px-5 rounded-2xl text-base leading-normal bg-[#E2E8F0] text-black rounded-tr-none">
-        <label htmlFor="file-upload" className='className="inline-flex items-center px-4 py-2 bg-[#0DACAC] hover:bg-[#1FBDBD] text-white rounded-2xl shadow-md cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-400 transition"'>
-          Escolher arquivo
+        <label onClick={isLoading ? null : (isFileSelected ? OnSimplify : null)} htmlFor="file-upload" className={`inline-flex items-center px-4 py-2 text-white rounded-2xl shadow-md transition
+            ${isLoading 
+              ? 'bg-gray-400 cursor-not-allowed' 
+              : 'bg-[#0DACAC] hover:bg-[#1FBDBD] cursor-pointer'
+            }
+          `}>
+          {isLoading 
+            ? "Simplificando..." 
+            : (isFileSelected ? "Simplificar" : "Escolher arquivo")
+          }
         </label>
-        <input type="file" accept="application/pdf" id='file-upload' className='hidden' onChange={OnFileChange}/>
+        <input type="file" disabled={isLoading} accept="application/pdf" id='file-upload' className='hidden' onChange={OnFileChange}/>
         <p className="text-gray-700 text-sm italic mt-1">{file}</p>
       </div>
     </div>
@@ -53,7 +63,9 @@ const ChatPage = () => {
   const [activeConversationId, setActiveConversationId] = useState();
   const [messageContent, setMessageContent] = useState('');
   const [messages, setMessages] = useState([]);
+  const [file, setFile] = useState();
   const [fileName, setFileName] = useState('Nenhum arquivo selecionado');
+  const [isSimplifying, setIsSimplifying] = useState(false);
   const chatContainerRef = useRef(null);
   const navigate = useNavigate();
 
@@ -144,9 +156,10 @@ const ChatPage = () => {
   }
 
   const handleFileChange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      setFileName(file.name);
+    const selected = e.target.files[0]
+    if (selected) {
+      setFile(selected);
+      setFileName(selected.name);
     }
   }
 
@@ -164,6 +177,32 @@ const ChatPage = () => {
       container.scrollTop = container.scrollHeight;
     }
   }, [messages]);
+
+  const handleUploadAndSimplify = async () => {
+    const formData = new FormData();
+    formData.append('file', file);
+
+    setIsSimplifying(true);
+
+    try {
+      const resp = await uploadAndSimplifyPdf(formData);
+      
+      const url = URL.createObjectURL(new Blob([resp.data], { type: 'application/pdf' }));
+      window.open(url, '_blank');
+      window.URL.revokeObjectURL(url);
+
+      // Atualiza a UI
+      await configureConvos();
+      
+    } catch (error) {
+      console.error("Erro ao simplificar o PDF:", error);
+      alert("Ocorreu um erro ao simplificar o arquivo.");
+    } finally {
+      setFile(null);
+      setFileName('Nenhum arquivo selecionado');
+      setIsSimplifying(false);
+    }
+  }
 
   return (
     <div className="w-screen h-screen bg-[#1F2A44] flex overflow-hidden">
@@ -212,8 +251,13 @@ const ChatPage = () => {
           
           {activeConversation && (
             activeConversation.hasPdf
-              ? <UserMessage userContent="Arquivo enviado" sent={true} onClickFile={handleClickFile}/>
-              : <SendPdf OnFileChange={handleFileChange} file={fileName} />
+              ? <UserMessage userContent="Arquivo enviado" sent={true}/>
+              : <SendPdf
+                  file={fileName}
+                  OnFileChange={handleFileChange}
+                  OnSimplify={handleUploadAndSimplify}
+                  isLoading={isSimplifying}
+                />
           )}
 
           {activeConversation && activeConversation.hasPdf && messages.length === 0 && (
