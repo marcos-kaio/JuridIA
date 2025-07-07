@@ -1,14 +1,14 @@
 ## Projeto de Desenvolvimento de Software - CIn UFPE
 # JuridIA
 
-Sistema que tem como objetivo simplificar documentos jurídicos combinando **frontend em React + Vite** com **backend em Node.js/Express** e **Gemini API**.
+Sistema que tem como objetivo simplificar documentos jurídicos combinando **frontend em React + Vite** com **backend em Node.js/MySQL** e **Gemini API**.
 
 ---
 
 ## Tecnologias usadas
 
-- **Frontend:** React + Vite
-- **Backend:** Node.js, Express, nodemon
+- **Frontend:** React + Vite, Tailwind CSS
+- **Backend:** Node.js + Express, MySQL + Sequelize
 - **Controle de versão:** Git
 
 ---
@@ -56,6 +56,7 @@ JuridIA/
 │   │   ├── assets/           # Ativos estáticos como imagens, fontes, etc.
 │   │   ├── components/       # Componentes React reutilizáveis
 │   │   ├── pages/            # Páginas principais da aplicação
+│   │   ├── services/         # Serviços utilizados na aplicação
 │   │   ├── app.jsx           # Componente principal da aplicação
 │   │   ├── main.jsx          # Ponto de entrada da aplicação React
 │   │   └── index.css         # Estilos globais da aplicação
@@ -68,12 +69,11 @@ JuridIA/
 │
 ├── Server/                   # Backend em Node.js com Express
 │   ├── controllers/          # Lógica dos controladores da API
-│   │   └── AIController.js   # Controlador da IA
+│   ├── middlewares/          # Funções que rodam entre a requisição e a resposta
+│   ├── models/               # Representação dos dados e interação com o banco de dados
+│   ├── routes/               # Definição das rotas/endpoints da API
 │   ├── services/             # Serviços externos ou internos
-│   │   └── geminiService.js  # Serviço que consome a Gemini API
 │   ├── utils/                # Funções utilitárias
-│   │   └── generatePdf.js    # Geração de PDF
-│   ├── node_modules/         # Dependências do backend
 │   ├── index.js              # Ponto de entrada da API
 │   ├── package-lock.json     # Controle de versões das dependências
 │   └── package.json          # Dependências e scripts do backend
