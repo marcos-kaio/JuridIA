@@ -5,7 +5,7 @@ module.exports = {
   },
 
   // Extensões de arquivo a serem testadas
-  moduleFileExtensions: ['js', 'jsx', 'json', 'node'],
+  //moduleFileExtensions: ['js', 'jsx', 'json', 'node'],
 
   // Caso use React Testing Library
   //setupFilesAfterEnv: ['@testing-library/jest-dom/extend-expect'],

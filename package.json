@@ -30,6 +30,9 @@
     "jest": "^30.0.4"
   },
   "dependencies": {
-    "juridia": "file:"
+    "@google/genai": "^1.8.0",
+    "html-pdf": "^3.0.1",
+    "juridia": "file:",
+    "marked": "^16.0.0"
   }
 }

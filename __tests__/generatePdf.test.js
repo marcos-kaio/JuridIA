@@ -1,55 +1,66 @@
-// generatePdf.test.js
-import { generatePdf } from './generatePdf.js';
-import pdf from 'html-pdf';
-import { marked } from 'marked';
+// __tests__/generatePdf.test.js
 
-jest.mock('html-pdf');
+// 1) os mocks devem ficar aqui, ANTES dos imports abaixo:
+jest.mock('html-pdf', () => ({
+  __esModule: true,
+  default: {
+    create: jest.fn(),
+  },
+}));
 jest.mock('marked', () => ({
-  parse: jest.fn(),
+  __esModule: true,
+  default: {
+    parse: jest.fn(),
+  },
 }));
 
+// 2) agora importamos nosso código e os módulos mockados
+import { generatePdf } from '../server/utils/generatePdf.js';
+import pdf from 'html-pdf';
+import marked from 'marked';
+
 describe('generatePdf', () => {
-  const fakeBuffer = Buffer.from('PDF_BINARY');
-  const fakeHtmlBody = '<p>Converted HTML</p>';
+  const dummyBuffer = Buffer.from('PDF_BINARY');
+  const dummyHtml   = '<p>Converted HTML</p>';
 
   beforeEach(() => {
     jest.clearAllMocks();
-    // marked.parse returns our fake HTML body
-    marked.parse.mockReturnValue(fakeHtmlBody);
-    // pdf.create(...).toBuffer invokes callback with (null, fakeBuffer)
-    pdf.create.mockReturnValue({
-      toBuffer: (cb) => cb(null, fakeBuffer),
-    });
+
+    // faz marked.parse(text) sempre retornar o nosso HTML simulado
+    marked.parse.mockReturnValue(dummyHtml);
+
+    // faz pdf.create(html, opts).toBuffer(cb) chamar cb(null, dummyBuffer)
+    pdf.create.mockReturnValue({ toBuffer: cb => cb(null, dummyBuffer) });
   });
 
-  it('converte markdown em HTML e gera um Buffer de PDF', async () => {
-    const markdown = '# Title\n\nSome **bold** text.';
-    const result = await generatePdf(markdown);
+  it('deve converter markdown em HTML e gerar Buffer de PDF', async () => {
+    const md     = '# Título\n\nTexto **negrito**';
+    const result = await generatePdf(md);
 
-    // Verifica a conversão Markdown → HTML
-    expect(marked.parse).toHaveBeenCalledWith(markdown);
+    // --- DEBUG ---
+    // Adicione esta linha para ver com o que a função foi chamada:
+    console.log('Chamadas de marked.parse:', marked.parse.mock.calls);
 
-    // Verifica que pdf.create recebeu o HTML completo
-    const expectedHtmlStart = '<html>';
-    const expectedHtmlEnd = '</html>';
-    const htmlArg = pdf.create.mock.calls[0][0];
-    expect(htmlArg).toContain(expectedHtmlStart);
-    expect(htmlArg).toContain(fakeHtmlBody);
-    expect(htmlArg).toContain(expectedHtmlEnd);
+    // 1) validamos que o marked.parse foi chamado com o markdown correto
+    expect(marked.parse).toHaveBeenCalledWith(md);
 
-    // Verifica o formato passado nas opções
+    // 2) o HTML passado ao pdf.create contém as tags e o corpo gerado
+    const htmlStr = pdf.create.mock.calls[0][0];
+    expect(htmlStr).toContain('<html>');
+    expect(htmlStr).toContain(dummyHtml);
+    expect(htmlStr).toContain('</html>');
+
+    // 3) validamos que o formato A4 foi corretamente repassado
     expect(pdf.create).toHaveBeenCalledWith(expect.any(String), { format: 'A4' });
 
-    // Verifica retorno do Buffer
-    expect(result).toBe(fakeBuffer);
+    // 4) e que o retorno é o nosso dummyBuffer
+    expect(result).toBe(dummyBuffer);
   });
 
-  it('rejeita a Promise quando html-pdf retorna erro', async () => {
-    // simula erro no toBuffer
-    pdf.create.mockReturnValueOnce({
-      toBuffer: (cb) => cb(new Error('PDF failure'), null),
-    });
+  it('deve rejeitar a Promise quando html-pdf falhar', async () => {
+    // simula erro no callback de toBuffer
+    pdf.create.mockReturnValueOnce({ toBuffer: cb => cb(new Error('falha'), null) });
 
-    await expect(generatePdf('anything')).rejects.toThrow('PDF failure');
+    await expect(generatePdf('x')).rejects.toThrow('falha');
   });
 });

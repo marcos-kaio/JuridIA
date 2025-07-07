@@ -1,4 +1,5 @@
 Server/.env
+__tests__/.env
 React/node_modules
 Server/node_modules
 node_modules

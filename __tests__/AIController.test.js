@@ -16,7 +16,7 @@ describe('AIControler', () => {
   beforeEach(() => {
     // Mock da requisição
     req = {
-      file: { buffer: Buffer.from('/__tests__/pdf-teste.pdf') },
+      file: { buffer: Buffer.from('fake-pdf') },
       body: { userId: '42' },
     };
 
