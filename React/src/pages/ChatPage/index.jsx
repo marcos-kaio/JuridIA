@@ -1,5 +1,6 @@
-import { useState } from 'react';
-import { Navigate, useNavigate } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { getChats, getChathistory, sendMessage } from '../../services/chatService';
 
 const ConversationItem = ({ text, isActive = false, onChangeChat }) => (
   <button onClick={onChangeChat} className={`w-full p-4 rounded-lg border-2 text-center text-lg font-semibold font-montserrat cursor-pointer
@@ -12,20 +13,87 @@ const ConversationItem = ({ text, isActive = false, onChangeChat }) => (
   </button>
 );
 
+const UserMessage = ({userContent}) => {
+  return(
+    <div className="flex justify-end w-full">
+      <div className="max-w-[75%] py-4 px-5 rounded-2xl text-base leading-normal bg-[#E2E8F0] text-black rounded-tr-none">
+        <span>{userContent}</span>
+      </div>
+    </div>
+  )
+}
+
+const BotMessage = ({botContent}) => {
+  return (
+    <div className="flex justify-start w-full">
+      <div className="max-w-[75%] py-4 px-5 rounded-2xl text-base leading-normal bg-[#0DACAC] text-white rounded-tl-none">
+        <span>{botContent}</span>
+      </div>
+    </div>
+  )
+}
+
 const ChatPage = () => {
-  const [activeConversationId, setActiveConversationId] = useState(1);
+  const [activeConversationId, setActiveConversationId] = useState();
+  const [messageContent, setMessageContent] = useState();
+  const [messages, setMessages] = useState([]);
   const navigate = useNavigate();
 
   // Estado para gerenciar as conversas e o chat ativo.
-  const [conversations, setConversations] = useState([
-    {id: 1, title: "Conversa 1"}
-  ]);
+  const [conversations, setConversations] = useState([]);
+
+  //gerencia barra de conversas
+  useEffect(() => {
+    (async ()=> {
+      const response = await getChats();
+      const chats = response.data;
+      const parsedChats = chats.map((chat) => ({
+        id: chat.id,
+        title: `Conversa ${chat.id}`
+      }));
+      
+      setConversations(parsedChats);
+      if (parsedChats.length > 0) {
+        setActiveConversationId(parsedChats[0].id);
+      }
+    })();
+  }, []);
+
+  // controle de histórico de mensagens
+  const fetchHistory = async () => {
+    if (!activeConversationId) return;
+    try {
+      const response = await getChathistory(activeConversationId);
+      setMessages(response.data);
+    } catch (error) {
+      console.error("Falha ao buscar o histórico do chat:", error);
+      setMessages([]);
+    }
+  };
+
+  useEffect(() => {
+      fetchHistory();
+  }, [activeConversationId]);
   
-  const handleNewChat = () => {
+  const handleNewChat = () => { // ** atualizar a lógica dos dados!
     setConversations(c => ([...c, {
       id: (conversations.length + 1),
       title: `Conversa ${conversations.length+1}`,
     }]))
+  }
+
+  const handleSendMessage = async () => {
+    if (messageContent === ""){ // evita mandar mensagem vazia
+      return;
+    }
+
+    try{
+      await sendMessage(activeConversationId, messageContent); // manda req para o backend
+      setMessageContent(); // limpa estado da mensagem
+      await fetchHistory(); // atualiza chat
+    } catch (err){
+      console.error(err)
+    }
   }
 
   const handleLeave = () => {
@@ -80,24 +148,19 @@ const ChatPage = () => {
         </header>
 
         <div className="flex-grow p-7 overflow-y-auto flex flex-col gap-5">
-          {/* Mensagem do usuário */}
-          <div className="flex justify-end w-full">
-            <div className="max-w-[75%] py-4 px-5 rounded-2xl text-base leading-normal bg-[#E2E8F0] text-black rounded-tr-none">
-              <span>Sim! preciso entender sobre todos os passos desse contrato!</span>
-            </div>
-          </div>
-          {/* Mensagem do Bot */}
-          <div className="flex justify-start w-full">
-            <div className="max-w-[75%] py-4 px-5 rounded-2xl text-base leading-normal bg-[#0DACAC] text-white rounded-tl-none">
-              <span>Otimo documento! ele é sobre contrato juridico da empresa extra! deseja simplificar o contrato?</span>
-            </div>
-          </div>
+          {/* definição de mensagens do chat */}
+          {messages.map((msg, index) => (
+            msg.role === 'user'
+              ? <UserMessage key={index} userContent={msg.content} />
+              : <BotMessage key={index} botContent={msg.content} />
+          ))}
+          
         </div>
 
         <footer className="p-5 px-7 bg-[#F4F7FB]">
           <div className="flex items-center bg-white border border-[#007B9E] rounded-2xl p-1 pr-2 pl-5">
-            <input type="text" placeholder="Pergunte algo" className="flex-grow border-none bg-transparent p-2.5 text-base focus:outline-none" />
-            <button className="flex items-center justify-center w-11 h-11 bg-[#0DACAC] rounded-full border-none cursor-pointer">
+            <input onChange={(e) => setMessageContent(e.target.value)} type="text" placeholder="Pergunte algo" className="flex-grow border-none bg-transparent p-2.5 text-base focus:outline-none" />
+            <button onClick={handleSendMessage} className="flex items-center justify-center w-11 h-11 bg-[#0DACAC] rounded-full border-none cursor-pointer">
               <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M22 2L11 13" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/><path d="M22 2L15 22L11 13L2 9L22 2Z" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
             </button>
           </div>
