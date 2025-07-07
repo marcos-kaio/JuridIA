@@ -24,7 +24,7 @@ export async function login({ email, password }) {
     localStorage.setItem("user_name", user.username);
 
     // configuração de envio de token
-    axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+    api.defaults.headers.common["Authorization"] = `Bearer ${token}`;
 
     return user;
   } catch (err) {
