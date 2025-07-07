@@ -45,4 +45,22 @@ router.delete("/drop/:id", async (req, res) => {
   }
 });
 
+// coleta informações disponíveis de chats/documentos
+router.get("/find", async (req, res) => {
+  try{
+    const userId = req.user.id;
+    const registeredDocs = await Document.findAll({
+      where: {userId: userId, status: "done"},
+      order: [["updatedAt", "ASC"]],
+      attributes: ["id", "originalText", "createdAt", "updatedAt"],
+    })
+
+    res.json(registeredDocs);
+
+  } catch(err){
+    console.error("Erro ao buscar documentos: ", err)
+    res.status(500).json({"Erro ao buscar documentos": err});
+  }
+})
+
 export default router;
