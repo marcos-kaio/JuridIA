@@ -2,7 +2,7 @@ import JuridiaLogo from '../../assets/juridia_logo.png';
 import MainPopUp from '../../components/MainPopUp';
 import { useState, useEffect } from 'react';
 import api from '../../services/api';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { checkAuth } from '../../services/authService';
 
 function LandingPage() {
@@ -11,6 +11,7 @@ function LandingPage() {
   const [loading, setLoading] = useState(false);
   const [link, setLink] = useState(null);
   const [logged, setLogged] = useState(false);
+  const navigate = useNavigate();
 
   const abrirPopup = () => setIsPopupOpen(true);
   const fecharPopup = () => setIsPopupOpen(false);
@@ -51,6 +52,15 @@ function LandingPage() {
     window.location.reload();
   }
 
+  // se estiver logado, encaminha para o chat, caso contrário, para a tela de login
+  const handleStart = () => {
+    if(logged){
+      navigate("/chat", { replace: true });
+    } else{
+      navigate("/login", { replace: true });
+    }
+  }
+
   return (
     <>
       <div className="w-full max-w-[1512px] mx-auto text-[#1F2A44] font-poppins bg-[#F4F7FB]">
@@ -86,7 +96,7 @@ function LandingPage() {
                 Transforme juridiquês em linguagem simples e visual<br />
                 <span className="text-[#0DACAC] font-bold">Rápido, seguro e direto na palma da sua mão.</span>
               </p>
-              <Link to="/chat" className="inline-block bg-[#0DACAC] text-white font-montserrat text-2xl font-bold rounded-lg border-none py-4 px-20 cursor-pointer no-underline">Comece agora!</Link>
+              <button onClick={handleStart} className="inline-block bg-[#0DACAC] text-white font-montserrat text-2xl font-bold rounded-lg border-none py-4 px-20 cursor-pointer no-underline">Comece agora!</button>
             </div>
           </section>
 
