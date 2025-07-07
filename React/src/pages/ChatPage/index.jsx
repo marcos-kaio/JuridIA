@@ -1,6 +1,8 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { getChats, getChathistory, sendMessage } from '../../services/chatService';
+// biblioteca que converte markdown para html
+import ReactMarkdown from "react-markdown";
 
 const ConversationItem = ({ text, isActive = false, onChangeChat }) => (
   <button onClick={onChangeChat} className={`w-full p-4 rounded-lg border-2 text-center text-lg font-semibold font-montserrat cursor-pointer
@@ -13,11 +15,11 @@ const ConversationItem = ({ text, isActive = false, onChangeChat }) => (
   </button>
 );
 
-const UserMessage = ({userContent}) => {
+const UserMessage = ({userContent, sent=false, onClickFile=null}) => {
   return(
     <div className="flex justify-end w-full">
       <div className="max-w-[75%] py-4 px-5 rounded-2xl text-base leading-normal bg-[#E2E8F0] text-black rounded-tr-none">
-        <span>{userContent}</span>
+        <span onClick={onClickFile} className={sent ? "font-semibold cursor-pointer underline" : ""}>{userContent}</span>
       </div>
     </div>
   )
@@ -27,7 +29,21 @@ const BotMessage = ({botContent}) => {
   return (
     <div className="flex justify-start w-full">
       <div className="max-w-[75%] py-4 px-5 rounded-2xl text-base leading-normal bg-[#0DACAC] text-white rounded-tl-none">
-        <span>{botContent}</span>
+        <ReactMarkdown>{botContent}</ReactMarkdown>
+      </div>
+    </div>
+  )
+}
+
+const SendPdf = ({OnFileChange, file}) => {
+  return (
+    <div className="flex justify-end w-full">
+      <div className="max-w-[75%] py-4 px-5 rounded-2xl text-base leading-normal bg-[#E2E8F0] text-black rounded-tr-none">
+        <label htmlFor="file-upload" className='className="inline-flex items-center px-4 py-2 bg-[#0DACAC] hover:bg-[#1FBDBD] text-white rounded-2xl shadow-md cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-400 transition"'>
+          Escolher arquivo
+        </label>
+        <input type="file" accept="application/pdf" id='file-upload' className='hidden' onChange={OnFileChange}/>
+        <p className="text-gray-700 text-sm italic mt-1">{file}</p>
       </div>
     </div>
   )
@@ -35,28 +51,37 @@ const BotMessage = ({botContent}) => {
 
 const ChatPage = () => {
   const [activeConversationId, setActiveConversationId] = useState();
-  const [messageContent, setMessageContent] = useState();
+  const [messageContent, setMessageContent] = useState('');
   const [messages, setMessages] = useState([]);
+  const [fileName, setFileName] = useState('Nenhum arquivo selecionado');
+  const chatContainerRef = useRef(null);
   const navigate = useNavigate();
 
   // Estado para gerenciar as conversas e o chat ativo.
   const [conversations, setConversations] = useState([]);
 
   //gerencia barra de conversas
-  useEffect(() => {
-    (async ()=> {
-      const response = await getChats();
+  const configureConvos = async () => {
+    const response = await getChats();
       const chats = response.data;
       const parsedChats = chats.map((chat) => ({
         id: chat.id,
-        title: `Conversa ${chat.id}`
+        title: `Conversa ${chat.id}`,
+        hasPdf: chat.status === "done",
+        updatedAt: chat.updatedAt,
       }));
       
+      // ordenação de chats
+      parsedChats.sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt));
+
       setConversations(parsedChats);
       if (parsedChats.length > 0) {
         setActiveConversationId(parsedChats[0].id);
       }
-    })();
+  }
+
+  useEffect(() => {
+    configureConvos();
   }, []);
 
   // controle de histórico de mensagens
@@ -79,20 +104,34 @@ const ChatPage = () => {
     setConversations(c => ([...c, {
       id: (conversations.length + 1),
       title: `Conversa ${conversations.length+1}`,
+      hasPdf: false,
     }]))
+    setActiveConversationId(conversations.length+1);
   }
 
   const handleSendMessage = async () => {
     if (messageContent === ""){ // evita mandar mensagem vazia
       return;
     }
+    const userMessageForUI = {
+      role: 'user',
+      content: messageContent,
+      tempId: Date.now(), // ID temporário para a 'key' do React
+    };
+
+    const message = messageContent;
+    setMessageContent(""); // limpa estado da mensagem
+    setMessages(prevMessages => [...prevMessages, userMessageForUI]);
 
     try{
-      await sendMessage(activeConversationId, messageContent); // manda req para o backend
-      setMessageContent(); // limpa estado da mensagem
+      await sendMessage(activeConversationId, message); // manda req para o backend
       await fetchHistory(); // atualiza chat
+      await configureConvos(); // atualiza ordem de conversas 
     } catch (err){
-      console.error(err)
+      console.error("Erro ao enviar mensagem: ", err);
+      setMessages(prevMessages => 
+        prevMessages.filter(msg => msg.tempId !== userMessageForUI.tempId)
+      ); // atualiza mensagens em caso de erro
     }
   }
 
@@ -103,6 +142,28 @@ const ChatPage = () => {
   const handleChangeChat = (id) => {
     setActiveConversationId(id);
   }
+
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setFileName(file.name);
+    }
+  }
+
+  // busca se há pdf cadastrado no chat em questão
+  const activeConversation = useMemo(() => 
+    conversations.find(convo => convo.id === activeConversationId),
+    [activeConversationId, conversations]
+  );
+
+  // atualização de posição do chat
+  useEffect(() => {
+    // Se a referência ao contêiner existir, role para o fundo
+    if (chatContainerRef.current) {
+      const container = chatContainerRef.current;
+      container.scrollTop = container.scrollHeight;
+    }
+  }, [messages]);
 
   return (
     <div className="w-screen h-screen bg-[#1F2A44] flex overflow-hidden">
@@ -147,19 +208,39 @@ const ChatPage = () => {
           </div>
         </header>
 
-        <div className="flex-grow p-7 overflow-y-auto flex flex-col gap-5">
+        <div ref={chatContainerRef} className="flex-grow p-7 overflow-y-auto flex flex-col gap-5">
+          
+          {activeConversation && (
+            activeConversation.hasPdf
+              ? <UserMessage userContent="Arquivo enviado" sent={true} onClickFile={handleClickFile}/>
+              : <SendPdf OnFileChange={handleFileChange} file={fileName} />
+          )}
+
+          {activeConversation && activeConversation.hasPdf && messages.length === 0 && (
+            <UserMessage userContent="Envie sua primeira mensagem!" sent={true} />
+          )}
+
           {/* definição de mensagens do chat */}
-          {messages.map((msg, index) => (
-            msg.role === 'user'
-              ? <UserMessage key={index} userContent={msg.content} />
-              : <BotMessage key={index} botContent={msg.content} />
-          ))}
+          {messages.map((msg, index) => {
+            const messageKey = msg.id || msg.tempId || `${msg.role}-${index}`;
+            
+            return msg.role === 'user'
+              ? <UserMessage key={messageKey} userContent={msg.content} />
+              : <BotMessage key={messageKey} botContent={msg.content} />
+            
+          })}
           
         </div>
 
         <footer className="p-5 px-7 bg-[#F4F7FB]">
           <div className="flex items-center bg-white border border-[#007B9E] rounded-2xl p-1 pr-2 pl-5">
-            <input onChange={(e) => setMessageContent(e.target.value)} type="text" placeholder="Pergunte algo" className="flex-grow border-none bg-transparent p-2.5 text-base focus:outline-none" />
+            <input
+              value={messageContent}
+              onChange={(e) => setMessageContent(e.target.value)}
+              onKeyUp={(e) => e.key === 'Enter' && handleSendMessage()} 
+              type="text" placeholder="Pergunte algo" 
+              className="flex-grow border-none bg-transparent p-2.5 text-base focus:outline-none" 
+            />
             <button onClick={handleSendMessage} className="flex items-center justify-center w-11 h-11 bg-[#0DACAC] rounded-full border-none cursor-pointer">
               <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M22 2L11 13" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/><path d="M22 2L15 22L11 13L2 9L22 2Z" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
             </button>

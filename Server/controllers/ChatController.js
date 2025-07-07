@@ -34,5 +34,8 @@ export async function ChatController(req, res) {
   await Chat.create({ documentId: docId, role: "user", content: userMessage });
   await Chat.create({ documentId: docId, role: "ai", content: aiReply });
 
+  await doc.changed('updatedAt', true);
+  await doc.save();
+
   res.json({reply: aiReply});
 }

@@ -11,7 +11,7 @@ router.get("/find", async (req, res) => {
     const registeredDocs = await Document.findAll({
       where: {userId: userId, status: "done"},
       order: [["updatedAt", "ASC"]],
-      attributes: ["id", "originalText", "createdAt", "updatedAt"],
+      attributes: ["id", "originalText", "status", "createdAt", "updatedAt"],
     })
 
     res.json(registeredDocs);
