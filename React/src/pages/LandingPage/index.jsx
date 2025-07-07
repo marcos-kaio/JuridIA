@@ -1,7 +1,7 @@
 import JuridiaLogo from '../../assets/juridia_logo.png';
 import MainPopUp from '../../components/MainPopUp';
 import { useState } from 'react';
-import axios from 'axios';
+import api from '../../services/api';
 import { Link } from 'react-router-dom';
 
 function LandingPage() {
@@ -18,7 +18,7 @@ function LandingPage() {
     const form = new FormData();
     form.append('file', file);
     try {
-      const resp = await axios.post('http://localhost:8081/simplify', form, {
+      const resp = await api.post('http://localhost:8081/document/simplify', form, {
         responseType: 'blob',
       });
       const url = URL.createObjectURL(resp.data);

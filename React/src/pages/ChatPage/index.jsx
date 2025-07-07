@@ -1,8 +1,5 @@
 import { useState } from 'react';
 
-// --- INÍCIO DA CORREÇÃO ---
-// O componente foi ajustado para que a cor de fundo seja definida
-// exclusivamente pela condição 'isActive'.
 const ConversationItem = ({ text, isActive = false }) => (
   <button className={`w-full p-4 rounded-lg border-2 text-center text-lg font-semibold font-montserrat cursor-pointer
     ${isActive 
@@ -13,8 +10,6 @@ const ConversationItem = ({ text, isActive = false }) => (
     {text}
   </button>
 );
-// --- FIM DA CORREÇÃO ---
-
 
 const ChatPage = () => {
   // Estado para gerenciar as conversas e o chat ativo.

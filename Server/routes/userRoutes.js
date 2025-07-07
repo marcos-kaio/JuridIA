@@ -1,5 +1,6 @@
 import express from "express";
 import { User } from "../models/db.js";
+import { requireAuth } from "../middlewares/auth.js";
 import dotenv from "dotenv";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
@@ -81,5 +82,13 @@ router.post("/login", async (req, res) => {
 // -- inclusão de atualização de informações de user --
 
 // -- inclusão de deleção de user --
+
+// verifica se token é válido
+router.get("/me", requireAuth, (req, res) => {
+  console.log("foi")
+  User.findByPk(req.user.id, { attributes: ["id", "username", "email"] })
+    .then((user) => res.json(user))
+    .catch(() => res.status(500).end());
+});
 
 export default router;
