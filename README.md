@@ -1,14 +1,14 @@
 ## Projeto de Desenvolvimento de Software - CIn UFPE
 # JuridIA
 
-Sistema que tem como objetivo simplificar documentos jurídicos combinando **frontend em React + Vite** com **backend em Node.js/Express** e **Gemini API**.
+Sistema que tem como objetivo simplificar documentos jurídicos combinando **frontend em React + Vite** com **backend em Node.js/MySQL** e **Gemini API**.
 
 ---
 
 ## Tecnologias usadas
 
-- **Frontend:** React + Vite
-- **Backend:** Node.js, Express, nodemon
+- **Frontend:** React + Vite, Tailwind CSS
+- **Backend:** Node.js + Express, MySQL + Sequelize
 - **Controle de versão:** Git
 
 ---
@@ -74,7 +74,6 @@ JuridIA/
 │   ├── routes/               # Definição das rotas/endpoints da API
 │   ├── services/             # Serviços externos ou internos
 │   ├── utils/                # Funções utilitárias
-│   ├── node_modules/         # Dependências do backend
 │   ├── index.js              # Ponto de entrada da API
 │   ├── package-lock.json     # Controle de versões das dependências
 │   └── package.json          # Dependências e scripts do backend
