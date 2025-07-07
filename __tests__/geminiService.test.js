@@ -1,7 +1,4 @@
 // __tests__/geminiService.test.js
-import { callGemini, chatWithGemini } from '../services/geminiService.js';
-import { GoogleGenAI, __generateContentMock as generateContentMock } from '@google/genai';
-
 jest.mock('@google/genai', () => {
   const generateContent = jest.fn();
   return {
@@ -10,6 +7,12 @@ jest.mock('@google/genai', () => {
     __generateContentMock: generateContent,
   };
 });
+
+
+import { callGemini, chatWithGemini } from '../services/geminiService.js';
+import { GoogleGenAI, __generateContentMock as generateContentMock } from '@google/genai';
+
+
 
 describe('geminiService', () => {
   beforeEach(() => {

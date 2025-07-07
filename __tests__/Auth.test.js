@@ -1,8 +1,12 @@
 // requireAuth.test.js
+
+jest.mock('jsonwebtoken');
+
+
 import { requireAuth } from './auth.js';
 import jwt from 'jsonwebtoken';
 
-jest.mock('jsonwebtoken');
+
 
 describe('requireAuth middleware', () => {
   let req;

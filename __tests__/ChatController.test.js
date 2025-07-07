@@ -1,10 +1,14 @@
 // __tests__/ChatController.test.js
+
+jest.mock('../models/db.js');
+jest.mock('../services/geminiService.js');
+
+
 import { ChatController } from '../controllers/ChatController.js';
 import { Document, Chat } from '../models/db.js';
 import { chatWithGemini } from '../services/geminiService.js';
 
-jest.mock('../models/db.js');
-jest.mock('../services/geminiService.js');
+
 
 describe('ChatController', () => {
   let req, res;

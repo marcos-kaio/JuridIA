@@ -1,14 +1,18 @@
 // __tests__/AIController.test.js
+
+jest.mock('../services/geminiService.js');
+jest.mock('../utils/generatePdf.js');
+jest.mock('../models/db.js');
+jest.mock('pdf-parse/lib/pdf-parse.js')
+
+
 import AIControler from '../controllers/AIController.js';
 import { callGemini } from '../services/geminiService.js';
 import { generatePdf } from '../utils/generatePdf.js';
 import { Document } from '../models/db.js';
 import pdfParse from 'pdf-parse/lib/pdf-parse.js';
 
-jest.mock('../services/geminiService.js');
-jest.mock('../utils/generatePdf.js');
-jest.mock('../models/db.js');
-jest.mock('pdf-parse/lib/pdf-parse.js');
+;
 
 describe('AIControler', () => {
   let req, res, docMock;
