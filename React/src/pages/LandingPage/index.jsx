@@ -18,7 +18,7 @@ function LandingPage() {
     const form = new FormData();
     form.append('file', file);
     try {
-      const resp = await axios.post('http://localhost:8081/simplify', form, {
+      const resp = await axios.post('http://localhost:8081/document/simplify', form, {
         responseType: 'blob',
       });
       const url = URL.createObjectURL(resp.data);
