@@ -8,7 +8,7 @@ export default async function AIControler(req, res) {
   try {
     const pdfBuffer = req.file.buffer; // recebe arquivo do buffer
     // requere userId para armazenar o documento - estrutura de teste por enquanto
-    const userId = Number(req.body.userId);
+    const userId = req.user.id;
 
     const { text: originalText } = await pdfParse(pdfBuffer); // extrai texto do pdf
 
