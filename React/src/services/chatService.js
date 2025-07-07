@@ -29,15 +29,13 @@ export const sendMessage = async (docId, userMessage) => {
   }
 };
 
-export const uploadAndSimplifyPdf = async (formData) => {
-  try {
-    return await api.post(
-      `http://localhost:8081/document/simplify`,
-      formData,
-      { headers: { "Content-Type": "multipart/form-data" } },
-      { responseType: "blob" }
-    );
-  } catch (err) {
-    console.error("Erro ao enviar e simplificar arquivo: ", err);
-  }
+export const uploadAndSimplifyPdf = (formData) => {
+  // A rota deve corresponder à do seu backend
+  return api.post('http://localhost:8081/document/simplify', formData, {
+    // ✨ CORREÇÃO: As configurações devem estar em um único objeto
+    headers: {
+      'Content-Type': 'multipart/form-data',
+    },
+    responseType: 'blob',
+  });
 };

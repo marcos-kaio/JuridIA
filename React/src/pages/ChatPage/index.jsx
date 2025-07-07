@@ -4,7 +4,7 @@ import { getChats, getChathistory, sendMessage, uploadAndSimplifyPdf } from '../
 // biblioteca que converte markdown para html
 import ReactMarkdown from "react-markdown";
 
-const ConversationItem = ({ text, isActive = false, onChangeChat }) => (
+export const ConversationItem = ({ text, isActive = false, onChangeChat }) => (
   <button onClick={onChangeChat} className={`w-full p-4 rounded-lg border-2 text-center text-lg font-semibold font-montserrat cursor-pointer
     ${isActive 
       ? 'bg-[#0DACAC] text-[#F4F7FB] border-[#F4F7FB]' 
@@ -15,7 +15,7 @@ const ConversationItem = ({ text, isActive = false, onChangeChat }) => (
   </button>
 );
 
-const UserMessage = ({userContent, sent=false, onClickFile=null}) => {
+export const UserMessage = ({userContent, sent=false, onClickFile=null}) => {
   return(
     <div className="flex justify-end w-full">
       <div className="max-w-[75%] py-4 px-5 rounded-2xl text-base leading-normal bg-[#E2E8F0] text-black rounded-tr-none">
@@ -25,7 +25,7 @@ const UserMessage = ({userContent, sent=false, onClickFile=null}) => {
   )
 }
 
-const BotMessage = ({botContent}) => {
+export const BotMessage = ({botContent}) => {
   return (
     <div className="flex justify-start w-full">
       <div className="max-w-[75%] py-4 px-5 rounded-2xl text-base leading-normal bg-[#0DACAC] text-white rounded-tl-none">
@@ -35,7 +35,7 @@ const BotMessage = ({botContent}) => {
   )
 }
 
-const SendPdf = ({OnFileChange, file, OnSimplify, isLoading}) => {
+export const SendPdf = ({OnFileChange, file, OnSimplify, isLoading}) => {
   const isFileSelected = file !== "Nenhum arquivo selecionado";
 
   return (
