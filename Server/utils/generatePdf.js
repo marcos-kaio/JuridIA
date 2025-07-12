@@ -1,10 +1,12 @@
 import pdf from "html-pdf";
 import { marked } from "marked";
 
-export async function generatePdf(text) {
-  // Converte Markdown em HTML e monta a estrutura html
-  const htmlBody = marked.parse(text);
-  const html = `
+export function markdownToHtml(text) {
+  return marked.parse(text);
+}
+
+export function wrapHtmlBody(bodyHtml) {
+  return `
     <html>
       <head>
         <meta charset="utf-8"/>
@@ -16,15 +18,23 @@ export async function generatePdf(text) {
       </head>
       <body>
         <h1>Documento Simplificado</h1>
-        ${htmlBody}
+        ${bodyHtml}
       </body>
-    </html>`;
+    </html>
+  `;
+}
 
-  // Retorna uma Promise que resolve com o Buffer do PDF
+export function generatePdf(html) {
   return new Promise((resolve, reject) => {
     pdf.create(html, { format: "A4" }).toBuffer((err, buffer) => {
       if (err) return reject(err);
       resolve(buffer);
     });
   });
+}
+
+export async function generatePdfFromMarkdown(text) {
+  const htmlBody = markdownToHtml(text);
+  const html = wrapHtmlBody(htmlBody);
+  return await generatePdf(html);
 }
