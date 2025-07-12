@@ -33,6 +33,7 @@
     "@google/genai": "^1.8.0",
     "html-pdf": "^3.0.1",
     "juridia": "file:",
-    "marked": "^16.0.0"
+    "marked": "^16.0.0",
+    "react-markdown": "^10.1.0"
   }
 }

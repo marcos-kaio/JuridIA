@@ -1,5 +1,8 @@
 *.env
 *.DS_Store
+*.log
+*.tmp
+coverage/
 React/node_modules
 Server/node_modules
 node_modules

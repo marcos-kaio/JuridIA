@@ -1,5 +1,5 @@
 // Simula dependências
-jest.mock("../models/db.js", () => ({
+jest.mock("../Server/models/db.js", () => ({
   Document: {
     findByPk: jest.fn(),
   },
@@ -9,15 +9,15 @@ jest.mock("../models/db.js", () => ({
     bulkCreate: jest.fn(),
   },
 }));
-jest.mock("../services/geminiService.js", () => ({
+jest.mock("../Server/services/geminiService.js", () => ({
   chatWithGemini: jest.fn(),
 }));
 
 
 
-import { ChatController } from "../controllers/ChatController.js";
-import { Document, Chat } from "../models/db.js";
-import { chatWithGemini } from "../services/geminiService.js";
+import { ChatController } from "../Server/controllers/ChatController.js";
+import { Document, Chat } from "../Server/models/db.js";
+import { chatWithGemini } from "../Server/services/geminiService.js";
 
 
 
