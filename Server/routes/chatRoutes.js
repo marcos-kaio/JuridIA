@@ -4,6 +4,24 @@ import express from "express";
 
 const router = express.Router();
 
+// coleta informações disponíveis de chats/documentos
+router.get("/find", async (req, res) => {
+  try{
+    const userId = req.user.id;
+    const registeredDocs = await Document.findAll({
+      where: {userId: userId, status: "done"},
+      order: [["updatedAt", "ASC"]],
+      attributes: ["id", "originalText", "status", "createdAt", "updatedAt"],
+    })
+
+    res.json(registeredDocs);
+
+  } catch(err){
+    console.error("Erro ao buscar documentos: ", err)
+    res.status(500).json({"Erro ao buscar documentos": err});
+  }
+})
+
 // envio de pergunta como requisição para a IA
 router.post("/ask/:id", ChatController);
 
@@ -44,5 +62,6 @@ router.delete("/drop/:id", async (req, res) => {
     res.status(500).json({ "Erro ao deletar chat": err });
   }
 });
+
 
 export default router;

@@ -7,7 +7,6 @@ export function requireAuth(req, res, next) {
   if (!auth) {
     return res.status(401).json({ error: "Token não fornecido." });
   }
-
   const [scheme, token] = auth.split(" ");
   if (scheme !== "Bearer" || !token) {
     return res.status(401).json({ error: "Formato de token inválido." });
