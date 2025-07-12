@@ -1,101 +1,100 @@
-// __tests__/ChatController.test.js
+// Simula dependências
+jest.mock("../models/db.js", () => ({
+  Document: {
+    findByPk: jest.fn(),
+  },
+  Chat: {
+    findAll: jest.fn(),
+    create: jest.fn(),
+    bulkCreate: jest.fn(),
+  },
+}));
+jest.mock("../services/geminiService.js", () => ({
+  chatWithGemini: jest.fn(),
+}));
 
-jest.mock('../models/db.js');
-jest.mock('../services/geminiService.js');
 
 
-import { ChatController } from '../controllers/ChatController.js';
-import { Document, Chat } from '../models/db.js';
-import { chatWithGemini } from '../services/geminiService.js';
+import { ChatController } from "../controllers/ChatController.js";
+import { Document, Chat } from "../models/db.js";
+import { chatWithGemini } from "../services/geminiService.js";
 
 
 
-describe('ChatController', () => {
-  let req, res;
+describe("ChatController", () => {
+  const mockRes = () => {
+    const res = {};
+    res.status = jest.fn(() => res);
+    res.json = jest.fn(() => res);
+    return res;
+  };
 
-  beforeEach(() => {
-    req = {
-      params: { id: '1' },
-      body: { question: 'Qual o resumo do documento?' },
-    };
+  it("responde com erro 404 se documento não existir", async () => {
+    Document.findByPk.mockResolvedValue(null);
+    const req = { params: { id: "123" }, body: { question: "Oi?" } };
+    const res = mockRes();
 
-    res = {
-      status: jest.fn().mockReturnThis(),
-      json: jest.fn(),
-    };
-
-    // mocks padrão
-    Document.findByPk.mockResolvedValue({
-      id: 1,
-      originalText: 'Texto original do documento',
-    });
-
-    Chat.findAll.mockResolvedValue([
-      { role: 'user', content: 'Olá' },
-      { role: 'ai', content: 'Oi! Como posso ajudar?' },
-    ]);
-
-    chatWithGemini.mockResolvedValue('Este é o resumo do documento.');
-    Chat.create.mockResolvedValue();
-  });
-
-  afterEach(() => {
-    jest.clearAllMocks();
-  });
-
-  it('deve buscar documento, histórico, chamar IA e salvar as mensagens', async () => {
     await ChatController(req, res);
 
-    // Document.findByPk chamado com o ID correto
-    expect(Document.findByPk).toHaveBeenCalledWith(1);
+    expect(Document.findByPk).toHaveBeenCalledWith(123);
+    expect(res.status).toHaveBeenCalledWith(404);
+    expect(res.json).toHaveBeenCalledWith({ error: "Documento não encontrado!" });
+  });
 
-    // Histórico de chat carregado em ordem crescente
-    expect(Chat.findAll).toHaveBeenCalledWith({
-      where: { documentId: 1 },
-      order: [['dateTime', 'ASC']],
-    });
+  it("responde com mensagem da IA e grava histórico no banco", async () => {
+    const req = {
+      params: { id: "1" },
+      body: { question: "Explique o começo." },
+    };
+    const res = mockRes();
 
-    // Mensagens formadas corretamente e enviadas para a IA
+    const mockDoc = {
+      originalText: "Texto completo do documento.",
+      update: jest.fn(),
+    };
+
+    const mockHistory = [
+      { role: "user", content: "Oi!" },
+      { role: "ai", content: "Olá!" },
+    ];
+
+    Document.findByPk.mockResolvedValue(mockDoc);
+    Chat.findAll.mockResolvedValue(mockHistory);
+    chatWithGemini.mockResolvedValue("Claro! O documento começa com...");
+
+    await ChatController(req, res);
+
     expect(chatWithGemini).toHaveBeenCalledWith([
       {
-        role: 'system',
-        text: expect.stringContaining('Texto original do documento'),
+        role: "system",
+        text: expect.stringContaining("Texto completo do documento."),
       },
-      { role: 'user', text: 'Olá' },
-      { role: 'assistant', text: 'Oi! Como posso ajudar?' },
-      { role: 'user', text: 'Qual o resumo do documento?' },
+      { role: "user", text: "Oi!" },
+      { role: "assistant", text: "Olá!" },
+      { role: "user", text: "Explique o começo." },
     ]);
 
-    // Duas entradas criadas: usuário e IA
-    expect(Chat.create).toHaveBeenCalledWith({
-      documentId: 1,
-      role: 'user',
-      content: 'Qual o resumo do documento?',
-    });
-    expect(Chat.create).toHaveBeenCalledWith({
-      documentId: 1,
-      role: 'ai',
-      content: 'Este é o resumo do documento.',
-    });
+    expect(Chat.bulkCreate).toHaveBeenCalledWith([
+      { documentId: 1, role: "user", content: "Explique o começo." },
+      { documentId: 1, role: "ai", content: "Claro! O documento começa com..." },
+    ]);
 
-    // Resposta JSON com o reply da IA
-    expect(res.json).toHaveBeenCalledWith({ reply: 'Este é o resumo do documento.' });
+    expect(mockDoc.update).toHaveBeenCalledWith({ updatedAt: expect.any(Date) });
+    expect(res.json).toHaveBeenCalledWith({ reply: "Claro! O documento começa com..." });
   });
 
-  it('deve retornar 404 se o documento não existir', async () => {
-    Document.findByPk.mockResolvedValue(null);
+  it("trata erros internos e retorna 500", async () => {
+    const req = {
+      params: { id: "x" },
+      body: { question: "Qual o tema?" },
+    };
+    const res = mockRes();
+
+    Document.findByPk.mockRejectedValue(new Error("DB fail"));
 
     await ChatController(req, res);
 
-    expect(res.status).toHaveBeenCalledWith(404);
-    expect(res.json).toHaveBeenCalledWith({ error: 'Documento não encontrado!' });
-  });
-
-  it('deve propagar erro se chatWithGemini falhar', async () => {
-    // faz chatWithGemini rejeitar
-    chatWithGemini.mockRejectedValue(new Error('IA indisponível'));
-
-    // como não há try/catch, a função retorna promise rejeitada
-    await expect(ChatController(req, res)).rejects.toThrow('IA indisponível');
+    expect(res.status).toHaveBeenCalledWith(500);
+    expect(res.json).toHaveBeenCalledWith({ error: "Erro ao processar o chat." });
   });
 });
