@@ -16,7 +16,7 @@ export function buildGeminiPdfPrompt(buffer) {
   ];
 }
 
-export async function callGeminiPdf(buffer) {
+export async function callGemini(buffer) {
   const response = await ai.models.generateContent({
     model: "gemini-2.0-flash",
     contents: buildGeminiPdfPrompt(buffer),
@@ -24,7 +24,7 @@ export async function callGeminiPdf(buffer) {
   return response.text;
 }
 
-export async function callGeminiChat(messages) {
+export async function chatWithGemini(messages) {
   const contents = messages.map(m => ({ role: m.role, text: m.text }));
   const response = await ai.models.generateContent({
     model: "gemini-2.0-flash",

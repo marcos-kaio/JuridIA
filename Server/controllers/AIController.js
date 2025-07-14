@@ -1,11 +1,11 @@
-import { callGeminiPdf } from "../services/geminiService.js";
+import { callGemini } from "../services/geminiService.js";
 import { generatePdfFromMarkdown } from "../utils/generatePdf.js";
 import { Document } from "../models/db.js";
 import pdfParse from "pdf-parse/lib/pdf-parse.js";
 
 export async function simplifyPdfBuffer(buffer) {
   const { text } = await pdfParse(buffer);
-  const simplifiedText = await callGeminiPdf(buffer);
+  const simplifiedText = await callGemini(buffer);
   const pdf = await generatePdfFromMarkdown(simplifiedText);
   return { originalText: text, simplifiedText, pdf };
 }
