@@ -1,6 +1,6 @@
-import { callGeminiPdf } from "../services/geminiService.js";
-import { generatePdfFromMarkdown } from "../utils/generatePdf.js";
-import { Document } from "../models/db.js";
+import { callGeminiPdf } from "../Server/services/geminiService.js";
+import { generatePdfFromMarkdown } from "../Server/utils/generatePdf.js";
+import { Document } from "../Server/models/db.js";
 import pdfParse from "pdf-parse/lib/pdf-parse.js";
 
 export async function simplifyPdfBuffer(buffer) {
