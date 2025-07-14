@@ -1,6 +1,6 @@
-import { Document, Chat } from "../Server/models/db.js";
-import { chatWithGemini } from "../Server/services/geminiService.js";
-import { buildChatMessages } from "../Server/services/chatService.js";
+import { Document, Chat } from "../models/db.js";
+import { chatWithGemini } from "../services/geminiService.js";
+import { buildChatMessages } from "../services/chatService.js";
 
 export async function ChatController(req, res) {
   const docId = Number(req.params.id);

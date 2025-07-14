@@ -1,6 +1,6 @@
 import express from 'express';
 import multer from "multer";
-import AIControler from "../Server/controllers/AIController.js";
+import AIControler from "../controllers/AIController.js";
 
 const router = express.Router();
 

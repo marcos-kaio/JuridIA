@@ -1,6 +1,6 @@
 import express from "express";
-import { User } from "../Server/models/db.js";
-import { requireAuth } from "../Server/middlewares/auth.js";
+import { User } from "../models/db.js";
+import { requireAuth } from "../middlewares/auth.js";
 import dotenv from "dotenv";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
