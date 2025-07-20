@@ -7,7 +7,11 @@ import { requireAuth } from "./middlewares/auth.js";
 
 const app = express();
 app.use(express.json());
-app.use(cors());
+
+// Configura o CORS para expor o cabeçalho personalizado
+app.use(cors({
+  exposedHeaders: ['X-Document-Id'],
+}));
 
 const port = 8081;
 
