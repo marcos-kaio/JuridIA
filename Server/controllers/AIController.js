@@ -1,18 +1,25 @@
 import { callGemini } from "../services/geminiService.js";
-import { generatePdf } from "../utils/generatePdf.js";
+import { generatePdfFromMarkdown } from "../utils/generatePdf.js";
 import { Document } from "../models/db.js";
 import pdfParse from "pdf-parse/lib/pdf-parse.js";
 
-export default async function AIControler(req, res) {
+export async function simplifyPdfBuffer(buffer) {
+  const { text } = await pdfParse(buffer);
+  const simplifiedText = await callGemini(buffer);
+  const pdf = await generatePdfFromMarkdown(simplifiedText);
+  return { originalText: text, simplifiedText, pdf };
+}
+
+export default async function AIController(req, res) {
   let doc;
+  const pdfBuffer = req.file?.buffer;
+  const userId = req.user?.id;
+
   try {
-    const pdfBuffer = req.file.buffer; // recebe arquivo do buffer
-    // requere userId para armazenar o documento - estrutura de teste por enquanto
-    const userId = req.user.id;
+    if (!pdfBuffer || !userId) throw new Error("Faltando arquivo ou usuário.");
 
-    const { text: originalText } = await pdfParse(pdfBuffer); // extrai texto do pdf
+    const { originalText, pdf } = await simplifyPdfBuffer(pdfBuffer);
 
-    // aloca informações iniciais na tabela
     doc = await Document.create({
       userId,
       originalUrl: pdfBuffer,
@@ -21,23 +28,15 @@ export default async function AIControler(req, res) {
       status: "processing",
     });
 
-    const simplifiedText = await callGemini(pdfBuffer); // envia pdf para a API
-    const outPdfBuffer = await generatePdf(simplifiedText); // transforma texto simplificado em pdf
+    await doc.update({ simplifiedUrl: pdf, status: "done" });
 
-    // atualiza banco de dados com blob do pdf simplificado
-    await doc.update({
-      simplifiedUrl: outPdfBuffer,
-      status: "done",
-    });
-
-    // retorna documento simplificado no formato pdf
     res
       .header("Content-Type", "application/pdf")
       .header("Content-Disposition", 'attachment; filename="simplificado.pdf"')
-      .send(outPdfBuffer);
+      .send(pdf);
   } catch (err) {
-    console.error("simplifyController error:", err);
-    res.status(500).json({ error: "Erro ao simplificar o documento." });
+    console.error("Erro no AIController:", err);
+    res.status(500).json({ error: "Falha ao simplificar documento." });
     if (doc) await doc.update({ status: "error" });
   }
 }

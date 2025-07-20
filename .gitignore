@@ -1,5 +1,6 @@
-Server/.env
+*.env
+*.DS_Store
+coverage
 React/node_modules
 Server/node_modules
 node_modules
-.DS_Store
