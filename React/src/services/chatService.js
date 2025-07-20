@@ -55,13 +55,24 @@ export const uploadAndSimplifyPdf = async (formData) => {
   }
 };
 
-// --- NOVA FUNÇÃO ---
 export const deleteChat = async (docId) => {
   try {
     const response = await api.delete(`http://localhost:8081/chat/drop/${docId}`);
     return response;
   } catch (err) {
     console.error("Erro ao deletar chat: ", err);
+    throw err;
+  }
+};
+
+export const downloadSimplifiedPdf = async (docId) => {
+  try {
+    const response = await api.get(`http://localhost:8081/document/download/${docId}`, {
+      responseType: 'blob',
+    });
+    return response.data;
+  } catch (err) {
+    console.error("Erro ao baixar o PDF: ", err);
     throw err;
   }
 };
