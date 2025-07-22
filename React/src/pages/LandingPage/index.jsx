@@ -1,38 +1,18 @@
 import JuridiaLogo from '../../assets/juridia_logo.png';
-import MainPopUp from '../../components/MainPopUp';
-import { useState, useEffect } from 'react';
-import api from '../../services/api';
+import { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { checkAuth } from '../../services/authService';
+import { uploadAndSimplifyPdf } from '../../services/chatService';
 
 function LandingPage() {
-  const [isPopupOpen, setIsPopupOpen] = useState(false);
   const [file, setFile] = useState(null);
+  const [fileName, setFileName] = useState('Clique para anexar ou arraste seu arquivo');
   const [loading, setLoading] = useState(false);
-  const [link, setLink] = useState(null);
   const [logged, setLogged] = useState(false);
   const navigate = useNavigate();
+  const fileInputRef = useRef(null);
 
-  const abrirPopup = () => setIsPopupOpen(true);
-  const fecharPopup = () => setIsPopupOpen(false);
-
-  const sendFile = async () => {
-    setLoading(true);
-    const form = new FormData();
-    form.append('file', file);
-    try {
-      const resp = await api.post('http://localhost:8081/document/simplify', form, {
-        responseType: 'blob',
-      });
-      const url = URL.createObjectURL(resp.data);
-      setLink(url);
-    } catch (err) {
-      console.error('Erro ao enviar o arquivo:', err);
-    }
-    setLoading(false);
-  };
-
-  // verifica se user ta logado sempre que carregar a página
+  // Verifica se o usuário está logado ao carregar a página
   useEffect(() => {
     async function verificarLogin() {
       const { valid } = await checkAuth();
@@ -42,24 +22,60 @@ function LandingPage() {
   }, []);
 
   const handleLeave = () => {
-    // limpa localStorage
     localStorage.removeItem("user_token");
     localStorage.removeItem("user_name");
-
-    // Remove header padrão do Axios
-    delete api.defaults.headers.common["Authorization"];
-
     window.location.reload();
   }
 
-  // se estiver logado, encaminha para o chat, caso contrário, para a tela de login
+  // Se estiver logado, encaminha para o chat, caso contrário, para a tela de login
   const handleStart = () => {
     if(logged){
-      navigate("/chat", { replace: true });
+      navigate("/chat");
     } else{
-      navigate("/login", { replace: true });
+      navigate("/login");
     }
   }
+
+  const handleFileChange = (e) => {
+    const selectedFile = e.target.files[0];
+    if (selectedFile) {
+      setFile(selectedFile);
+      setFileName(selectedFile.name);
+    }
+  };
+
+  const handleAreaClick = () => {
+    fileInputRef.current.click();
+  };
+
+  const handleSimplify = async () => {
+    if (!logged) {
+      alert("Você precisa estar logado para simplificar um documento.");
+      navigate('/login');
+      return;
+    }
+
+    if (!file) {
+      alert('Por favor, selecione um arquivo primeiro.');
+      return;
+    }
+
+    setLoading(true);
+    const formData = new FormData();
+    formData.append('file', file);
+
+    try {
+      // Usa a função do serviço de chat para enviar o arquivo
+      await uploadAndSimplifyPdf(formData);
+      // Redireciona para a página de chat após o sucesso
+      navigate('/chat');
+    } catch (err) {
+      console.error('Erro ao simplificar o arquivo:', err);
+      alert('Ocorreu um erro ao simplificar o arquivo. Tente novamente.');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <>
@@ -105,10 +121,26 @@ function LandingPage() {
             <h2 className="text-5xl font-bold leading-tight text-[#1F2A44] mb-6">Simplifique seu contrato</h2>
             <p className="font-montserrat text-xl leading-relaxed max-w-[605px] mb-10">Faça o upload do seu contrato em formato pdf ou .txt e nossa Inteligência Artificial irá fornecer uma explicação clara e concisa dos termos mais importantes.</p>
             <div className="w-full max-w-5xl bg-[#EBEBEB] shadow-sm rounded-[50px] p-6">
-              <div className="h-[186px] bg-[rgba(226,232,240,0.24)] shadow-inner rounded-[37px] flex items-center justify-center border-2 border-dashed border-[#b0b0b0] mb-6 cursor-pointer text-black text-4xl">
-                <p>Clique para anexar ou arraste seu arquivo</p>
+              <input
+                type="file"
+                ref={fileInputRef}
+                onChange={handleFileChange}
+                accept="application/pdf,.txt"
+                className="hidden"
+              />
+              <div
+                className="h-[186px] bg-[rgba(226,232,240,0.24)] shadow-inner rounded-[37px] flex items-center justify-center border-2 border-dashed border-[#b0b0b0] mb-6 cursor-pointer text-black text-4xl"
+                onClick={handleAreaClick}
+              >
+                <p>{fileName}</p>
               </div>
-              <button className="w-full h-[67px] bg-[#F4F7FB] shadow-md rounded-[37px] border-none text-[#1F2A44] text-4xl font-bold cursor-pointer" onClick={abrirPopup}>Simplificar contrato</button>
+              <button
+                className="w-full h-[67px] bg-[#F4F7FB] shadow-md rounded-[37px] border-none text-[#1F2A44] text-4xl font-bold cursor-pointer disabled:bg-gray-400 disabled:cursor-not-allowed"
+                onClick={handleSimplify}
+                disabled={loading || !file}
+              >
+                {loading ? 'Simplificando...' : 'Simplificar contrato'}
+              </button>
             </div>
           </section>
 
@@ -157,32 +189,6 @@ function LandingPage() {
           <p className="m-0 font-extralight text-2xl mt-2">Simplificando o complexo, um contrato por vez.</p>
         </footer>
       </div>
-
-      {/* Componente do popup: */}
-      <MainPopUp isOpen={isPopupOpen} onClose={fecharPopup}>
-        {!link ? (
-          <>
-            <input
-              className='text-white mb-4'
-              type="file"
-              accept="application/pdf"
-              onChange={(e) => setFile(e.target.files[0])}
-            />
-            <button
-              className='w-1/3 border border-black rounded-md cursor-pointer mt-auto p-1 text-white bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400'
-              disabled={loading || !file}
-              onClick={sendFile}
-            >
-              {!loading ? "Simplificar" : "Simplificando..."}
-            </button>
-          </>
-        ) : (
-          <div className='flex flex-col items-center justify-center gap-4 text-white'>
-            <a href={link} target="_blank" download="simplificado.pdf" className='underline text-xl'>Baixe aqui o seu arquivo</a>
-            <a href={link} target="_blank" className='underline text-xl'>ou acesse-o por este link</a>
-          </div>
-        )}
-      </MainPopUp>
     </>
   );
 }
