@@ -1,11 +1,11 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { login as apiLogin, register } from '../../services/authService.js';
-import { useNotification } from '../../context/NotificationContext.jsx'; // Importe o hook
+import { useNotification } from '../../context/NotificationContext.jsx';
 
 const RegisterPage = () => {
   const navigate = useNavigate();
-  const { showNotification } = useNotification(); // Use o hook
+  const { showNotification } = useNotification();
   const [userInfo, setuserInfo] = useState({
     email: '', username: '', birthday: '', escolaridade: '', password: ''
   })
@@ -18,7 +18,7 @@ const RegisterPage = () => {
     e.preventDefault();
     try{
       const data = await register(userInfo);
-      showNotification(`Registro bem-sucedido. Seja bem vindo(a), ${data.username}!`, 'success'); // Substitua o alert
+      showNotification(`Registro bem-sucedido. Seja bem vindo(a), ${data.username}!`, 'success');
       
       await apiLogin({
         email: userInfo.email,
@@ -28,21 +28,23 @@ const RegisterPage = () => {
 
     } catch(err){
       console.error("Erro ao registrar: ", err);
-      showNotification("Erro! Tente novamente.", 'error'); // Substitua o alert
+      showNotification("Erro! Tente novamente.", 'error');
     }
   }
 
   return (
-    // ... (o resto do seu JSX continua o mesmo)
     <div className="w-full min-h-screen bg-[#1F2A44] flex justify-center items-center p-5 box-border">
       <div className="w-full max-w-5xl bg-[#F4F7FB] rounded-lg p-10 md:p-12 box-border flex flex-col gap-6">
+        
         <div className="text-left">
           <h1 className="text-[#1F2A44] text-4xl md:text-5xl font-bold font-montserrat">Cadastre-se</h1>
           <p className="text-[#A0A0A0] text-base font-light mt-2.5">
             Preencha suas informações abaixo para criar uma conta
           </p>
         </div>
+
         <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          {/* Coluna da Esquerda */}
           <div className="flex flex-col gap-5">
             <div className="relative flex items-center bg-[rgba(229,229,230,0.81)] rounded-md w-full">
               <div className="absolute left-4 pointer-events-none">
@@ -56,13 +58,24 @@ const RegisterPage = () => {
               </div>
               <input type="text" name='username' onChange={handleChange} placeholder="Digite seu nome" className="w-full p-5 pl-12 bg-transparent text-lg text-[#1F2A44] rounded-md focus:outline-none focus:ring-2 focus:ring-[#0DACAC] placeholder:text-[#AFAFAF]" />
             </div>
+            
+            {/* --- INÍCIO DA MUDANÇA --- */}
             <div className="relative flex items-center bg-[rgba(229,229,230,0.81)] rounded-md w-full">
               <div className="absolute left-4 pointer-events-none">
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="3" y="4" width="18" height="18" rx="2" ry="2" stroke="#AFAFAF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/><line x1="16" y1="2" x2="16" y2="6" stroke="#AFAFAF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/><line x1="8" y1="2" x2="8" y2="6" stroke="#AFAFAF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/><line x1="3" y1="10" x2="21" y2="10" stroke="#AFAFAF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
               </div>
-              <input type="text" name='birthday' onChange={handleChange} placeholder="Data de nascimento" className="w-full p-5 pl-12 bg-transparent text-lg text-[#1F2A44] rounded-md focus:outline-none focus:ring-2 focus:ring-[#0DACAC] placeholder:text-[#AFAFAF]" onFocus={(e) => (e.target.type = "date")} onBlur={(e) => (e.target.type = "text")} />
+              <input 
+                type="date" 
+                name='birthday' 
+                onChange={handleChange} 
+                className="w-full p-5 pl-12 bg-transparent text-lg text-[#1F2A44] rounded-md focus:outline-none focus:ring-2 focus:ring-[#0DACAC] date-input"
+              />
             </div>
+            {/* --- FIM DA MUDANÇA --- */}
+
           </div>
+          
+          {/* ... O resto do formulário continua igual ... */}
           <div className="flex flex-col gap-5">
             <div className="relative flex items-center bg-[rgba(229,229,230,0.81)] rounded-md w-full">
               <div className="absolute left-4 pointer-events-none">

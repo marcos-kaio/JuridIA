@@ -1,2 +1,28 @@
 @import url("https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&family=Poppins:wght@200;300;400;600;700&display=swap");
 @import "tailwindcss";
+
+/* Estiliza o campo de data para parecer ter um placeholder */
+.date-input {
+  position: relative;
+  color: #AFAFAF; /* Cor do placeholder */
+}
+
+/* Mostra o texto do placeholder quando o campo está vazio */
+.date-input:before {
+  content: attr(placeholder);
+  position: absolute;
+  color: #AFAFAF;
+  width: 100%;
+}
+
+/* Esconde o placeholder e mostra a data quando o usuário digita algo */
+.date-input:focus:before,
+.date-input:valid:before {
+  display: none;
+}
+
+/* Mostra o texto da data em preto quando o usuário digita algo */
+.date-input:valid {
+  color: #1F2A44;
+}
+/* --- FIM DA MUDANÇA --- */
