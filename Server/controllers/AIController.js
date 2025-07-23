@@ -30,6 +30,8 @@ export default async function AIController(req, res) {
 
     await doc.update({ simplifiedUrl: pdf, status: "done" });
 
+    // Envia o ID do documento no header da resposta
+    res.setHeader('X-Document-Id', doc.id);
     res
       .header("Content-Type", "application/pdf")
       .header("Content-Disposition", 'attachment; filename="simplificado.pdf"')
