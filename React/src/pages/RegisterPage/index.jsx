@@ -1,27 +1,26 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { login as apiLogin, register } from '../../services/authService.js';
+import { useNotification } from '../../context/NotificationContext.jsx'; // Importe o hook
 
 const RegisterPage = () => {
   const navigate = useNavigate();
+  const { showNotification } = useNotification(); // Use o hook
   const [userInfo, setuserInfo] = useState({
     email: '', username: '', birthday: '', escolaridade: '', password: ''
   })
 
-  // atualiza dados a cada atualização dos campos
   function handleChange(e){
     setuserInfo(c => ({...c, [e.target.name]: e.target.value}));
   }
 
-  // roda ao enviar formulário de cadastro
   const handleSubmit = async (e) => {
     e.preventDefault();
     try{
       const data = await register(userInfo);
-      alert(`Registro bem-sucedido. Seja bem vindo(a), ${data.username}!`);
+      showNotification(`Registro bem-sucedido. Seja bem vindo(a), ${data.username}!`, 'success'); // Substitua o alert
       
-      // fazlogin automaticamente e redireciona para a página inicial após cadastro
-      const login = await apiLogin({
+      await apiLogin({
         email: userInfo.email,
         password: userInfo.password
       });
@@ -29,23 +28,21 @@ const RegisterPage = () => {
 
     } catch(err){
       console.error("Erro ao registrar: ", err);
-      alert("Erro! Tente novamente.")
+      showNotification("Erro! Tente novamente.", 'error'); // Substitua o alert
     }
   }
 
   return (
+    // ... (o resto do seu JSX continua o mesmo)
     <div className="w-full min-h-screen bg-[#1F2A44] flex justify-center items-center p-5 box-border">
       <div className="w-full max-w-5xl bg-[#F4F7FB] rounded-lg p-10 md:p-12 box-border flex flex-col gap-6">
-        
         <div className="text-left">
           <h1 className="text-[#1F2A44] text-4xl md:text-5xl font-bold font-montserrat">Cadastre-se</h1>
           <p className="text-[#A0A0A0] text-base font-light mt-2.5">
             Preencha suas informações abaixo para criar uma conta
           </p>
         </div>
-
         <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          {/* Coluna da Esquerda */}
           <div className="flex flex-col gap-5">
             <div className="relative flex items-center bg-[rgba(229,229,230,0.81)] rounded-md w-full">
               <div className="absolute left-4 pointer-events-none">
@@ -66,8 +63,6 @@ const RegisterPage = () => {
               <input type="text" name='birthday' onChange={handleChange} placeholder="Data de nascimento" className="w-full p-5 pl-12 bg-transparent text-lg text-[#1F2A44] rounded-md focus:outline-none focus:ring-2 focus:ring-[#0DACAC] placeholder:text-[#AFAFAF]" onFocus={(e) => (e.target.type = "date")} onBlur={(e) => (e.target.type = "text")} />
             </div>
           </div>
-          
-          {/* Coluna da Direita */}
           <div className="flex flex-col gap-5">
             <div className="relative flex items-center bg-[rgba(229,229,230,0.81)] rounded-md w-full">
               <div className="absolute left-4 pointer-events-none">
