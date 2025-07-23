@@ -60,7 +60,7 @@ JuridIA/
 │   │   ├── app.jsx           # Componente principal da aplicação
 │   │   ├── main.jsx          # Ponto de entrada da aplicação React
 │   │   └── index.css         # Estilos globais da aplicação
-│   ├── .gitignore            # Arquivos ignorados no Git (frontend)
+│   |
 │   ├── eslint.config.js      # Configuração do ESLint
 │   ├── index.html            # Página HTML principal
 │   ├── package-lock.json     # Controle de versões das dependências
