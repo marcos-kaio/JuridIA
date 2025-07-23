@@ -10,8 +10,8 @@ router.get("/find", async (req, res) => {
     const userId = req.user.id;
     const registeredDocs = await Document.findAll({
       where: {userId: userId, status: "done"},
-      order: [["updatedAt", "ASC"]],
-      attributes: ["id", "originalText", "status", "createdAt", "updatedAt"],
+      order: [["updatedAt", "DESC"]], // Ordena pelos mais recentes primeiro
+      attributes: ["id", "title", "status", "createdAt", "updatedAt"], // Inclui o "title"
     })
 
     res.json(registeredDocs);
@@ -62,6 +62,5 @@ router.delete("/drop/:id", async (req, res) => {
     res.status(500).json({ "Erro ao deletar chat": err });
   }
 });
-
 
 export default router;

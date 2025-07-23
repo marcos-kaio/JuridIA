@@ -28,7 +28,11 @@ export default (sequelize) =>
         allowNull: true,
         field: "original_text",
       },
-      // NOVO CAMPO ADICIONADO
+      title: {
+        type: DataTypes.STRING(255),
+        allowNull: true,
+        field: "title",
+      },
       comparisonData: {
         type: DataTypes.JSON,
         allowNull: true,

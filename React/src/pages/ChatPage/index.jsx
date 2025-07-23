@@ -2,7 +2,7 @@ import { useEffect, useState, useMemo, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { getChats, getChathistory, sendMessage, uploadAndSimplifyPdf, deleteChat, downloadSimplifiedPdf } from '../../services/chatService';
 import ReactMarkdown from "react-markdown";
-import { useNotification } from '../../context/NotificationContext'; // Importe o hook
+import { useNotification } from '../../context/NotificationContext';
 
 // Componente do ícone da lixeira
 const TrashIcon = ({...props}) => (
@@ -14,6 +14,7 @@ const TrashIcon = ({...props}) => (
     </svg>
 );
 
+// --- INÍCIO DA MUDANÇA ---
 const ConversationItem = ({ text, isActive = false, onChangeChat, onDelete }) => (
   <div className={`relative flex items-center justify-between w-full p-4 rounded-lg border-2 group
     ${isActive
@@ -21,7 +22,12 @@ const ConversationItem = ({ text, isActive = false, onChangeChat, onDelete }) =>
       : 'bg-[#F4F7FB] border-[#0DACAC] text-[#0DACAC]'
     }`}
   >
-    <button onClick={onChangeChat} className="w-full text-left text-lg font-semibold font-montserrat cursor-pointer bg-transparent border-none">
+    <button 
+      onClick={onChangeChat} 
+      title={text}
+      // Adicionamos pr-8 (padding-right: 2rem) para dar espaço ao ícone
+      className="w-full text-left text-lg font-semibold font-montserrat cursor-pointer bg-transparent border-none overflow-hidden whitespace-nowrap text-ellipsis pr-8"
+    >
       {text}
     </button>
     <button 
@@ -34,6 +40,7 @@ const ConversationItem = ({ text, isActive = false, onChangeChat, onDelete }) =>
     </button>
   </div>
 );
+// --- FIM DA MUDANÇA ---
 
 const UserMessage = ({userContent, sent=false, onClickFile=null}) => {
   return(
@@ -89,7 +96,7 @@ const ChatPage = () => {
   const [isSimplifying, setIsSimplifying] = useState(false);
   const chatContainerRef = useRef(null);
   const navigate = useNavigate();
-  const { showNotification } = useNotification(); // Use o hook
+  const { showNotification } = useNotification();
 
   const [conversations, setConversations] = useState([]);
 
@@ -108,13 +115,11 @@ const ChatPage = () => {
         const chats = response.data;
         const parsedChats = chats.map((chat) => ({
           id: chat.id,
-          title: `Conversa ${chat.id}`,
+          title: chat.title || `Conversa ${chat.id}`,
           hasPdf: chat.status === "done",
           updatedAt: chat.updatedAt,
         }));
         
-        parsedChats.sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt));
-
         setConversations(parsedChats);
         
         if (parsedChats.length > 0 && !conversations.some(c => c.id === activeConversationId)) {
@@ -223,7 +228,7 @@ const ChatPage = () => {
             showNotification('Conversa deletada com sucesso!', 'success');
         } catch (error) {
             console.error("Erro ao deletar a conversa:", error);
-            showNotification("Não foi possível deletar a conversa.", 'error'); // Substitua o alert
+            showNotification("Não foi possível deletar a conversa.", 'error');
         }
     }
   }
@@ -265,23 +270,16 @@ const ChatPage = () => {
       if (isNaN(newConvoId)) {
         throw new Error("ID retornado pelo servidor é inválido.");
       }
-
-      const newConversation = {
-        id: newConvoId,
-        title: `Conversa ${newConvoId}`,
-        hasPdf: true, 
-        updatedAt: new Date().toISOString()
-      };
       
-      showNotification('Documento simplificado com sucesso!', 'success');
-      setConversations(prev => [newConversation, ...prev.filter(c => !c.id.toString().startsWith('new-chat-'))]);
+      await configureConvos(); 
       setActiveConversationId(newConvoId);
       setMessages([]);
+      showNotification('Documento simplificado com sucesso!', 'success');
   
     } catch (error) {
       console.error("Erro ao simplificar o PDF:", error);
       const errorMessage = error.response?.data?.error || `Ocorreu um erro ao simplificar o arquivo.`;
-      showNotification(errorMessage, 'error'); // Substitua o alert
+      showNotification(errorMessage, 'error');
     } finally {
       setFile(null);
       setFileName('Nenhum arquivo selecionado');
@@ -306,7 +304,7 @@ const ChatPage = () => {
         }
     } catch (error) {
         console.error("Falha ao processar o arquivo para download/visualização.", error);
-        showNotification("Não foi possível obter o arquivo.", 'error'); // Substitua o alert
+        showNotification("Não foi possível obter o arquivo.", 'error');
     }
   };
   
@@ -315,7 +313,6 @@ const ChatPage = () => {
   };
 
   return (
-    // ... (o resto do seu JSX continua o mesmo)
     <div className="w-screen h-screen bg-[#1F2A44] flex overflow-hidden">
       <aside className="hidden md:flex flex-col flex-shrink-0 w-[260px] bg-[#1F2A44] p-5 gap-5 border-r border-[#323f58]">
         <div className="flex flex-col items-center gap-4">
@@ -346,7 +343,7 @@ const ChatPage = () => {
         <header className="p-4 px-6 flex items-center justify-between gap-4 border-b border-[#007B9E]">
             <div className='flex items-center gap-4'>
                 <div className="bot-identity">
-                    <svg width="48" height="48" viewBox="0 0 62 61" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="0.850586" width="60.5682" height="60.5682" fill="url(#pattern_bot)"/><defs><pattern id="pattern_bot" patternContentUnits="objectBoundingBox" width="1" height="1"><use href="#image_bot" transform="scale(0.015625)"/></pattern><image id="image_bot" width="64" height="64" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAACqaXHeAAAACXBIWXMAAA7DAAAOwwHHb6hkAAAAGXRFWHRTb2Z0d2FyZQB3d3cuaW5rc2NhcGUub3Jnm+48GgAAB7ZJREFUeJztm22MVOUVgJ9zZy62iIhYqChY2qgtNkBCKpAQaI24wJ+K4aNNf5Sd2YVtJFqL1bIzu8lNdmfZ1a1aqzaw7B1iqyZAGqM/IHRNTKCyWAMUrBSLBCht+QopgRDZ2bmnP2Zqxpl7Z+/M3J1ZIk+yP3g/znveM+e+95xzX4SaoEJLMoGyBlCEjbRHWkG02pqEqr0gALG760G6gdHZvwXMP3Cc3W//tdqqGNVeEAAxvu/S9mANNKmRAdCb/bUNPzUywMjhhgFqrUCt+dIbQMqatWajyddG/QBxloLMQpmMMBEYFax6ngygnEM4DbofNd7iwsB7bGpKlSqoNAOs2WgywWwCWoGJpS42zJxFtI1zg5tKMYR/A8R6ZiCh7cC95WhXPfQTDGM5bZHDfkb7OwNakkuR0J8Z8ZsHkPtw9H3i9iO+Rg85osVeiLIDCFeqWpUZRI3FdNS/W2xQcQO0JO9FtR8Y7zHiMsIOoB9HziKUfAiVhWIi3AE6F1gM3OIx8iJizKa9/lMvUcV/VdVXcN98GqGbsHRiRf7rV+9hwUqOY5AYqusoTO7Go+mXgSVe0709IJZ8GNFdLj1XEVlGe2RnWQoPF7HeJYhsJ5NdfhE1Fno9Ct6HoOjTHh31I27zAB0NO4Coa584Hnvx8gArOY6UniU/sFH+SEd0WdlKVoO4/RaQ/wZIYcpEt8fV3QMGWIxbVCdOVwAqDjPS6dJoMuDUuY12N4DoPQVtyr9JNPylIt2qQaJ+H3CmsENcYxh3Ayh3Fs7naC1qdqUjmtG1oH2S22j316DB7RRsVS76Wt9KjiPFY4h+F9UzwJskGj70NTefVnsOyqMod6ByBFWbDdHzQ85TuUD+Bgyd4DbUywNcDkd1hlY4OZ0BPQyaQPkJyDqQD4jbTww5N5+43YXDXpRfAasQ7cTgKLEtDw0-9WgiwvxpMKPW9k3b5yNkQ/BvVKPa8wGN7iW5ajPYDXaf8mndHjJWrnxSKDcp95N8zBH6Nsz2v9O+gSun56yrecDdHzGM4i0E9yWhXYxLXw6iBUzTI22CKH1XQBWMH65FQMZxohPUPo9GEsa7BkWW2NB1ix9X6+c+V7qH6dQfkowF/+c4anytMZOQGcqFjOtpVpYF/Fcorwpf8ucMMAtVag1twwQK0VqDVh4DJBxgLNW+ZhOPegqV10NP0nEJmxjZMwzHmoc4pE4weByMxwyQD6AhMXt3+D4ewBtiDmSWL2i1ibyw+zrc3jiSdfQMyTKNvA2Ee895XA9EX6DESbAX/FjmK09EwDcvN+E+HnpIzjxHt/TUvPN33LWp+cSovdTco4DvokYOYo/RjN9v0V6wsXEZrDtDccxeqZSSr0PLAIGFuWOEe+5VFjvhVkHRp6knjyQ8TZgRPajeq/uOnqaQCujZ6MyF0Y6fk4shjRB9BiJXu5i6ESJm8uofwJx2mms/FYJhK0Vp8GVn4+JG5vBVaUJDad3kPYuIh3ZmmAzkZlNuJkSh2pr2Z7FFBQ8fO18gKjru4tSbcM20hEV+Y3BvcW6Gq6hMpDwJHAZBZyBMOpw1p7JSiBHmVxt2qEDG2sjshBzFMzQNYC5yrULZdzIGsxT82grfFAgHI9kiHVC4W+qLf7kpjJ/F7l8zd6GXvLD0HXAXPL1O8g8DvM1B+wmq6WKaMoHtmguLy/5dvZh9Tft4HfPnEN2AZsy94uqQPqgPnAVzxmfQbsBnah6V10rD7ka60K8EqHXcpXOonW5GzaykhPMxs5BHRjWWEGp34DJ303RjYAc7iMETpF+MTJsmoHFeBugMHUTsLmAPnfBx2agaUVrZjZ4KfZv5rjfrB1NV0Cec+l5xHi9o+GVaMqU+x+wHMePTaxXs8bF9cb3gZoj/aBuN0QGY3IO8Tt51j/eiX1+RFB8ZpgOr2WkLGPwuguBPyS0LWfEbN3gvYjnAFjIHANhfMcvXl3tj4YOMUN0Nl4jNiWlYiz02PsGITlIMsz/xyGr+cK3HflCPFklESkP2jxPqK7+ncRXUamblArpoHuoSX5LFbSK4YoC3+5QHvD2xgyD9wuHlSNEKpPk9L9xJPlRpYF+E+G2iKHOZ+ano3zzwalQBlkvCFudwXhDaVlg5uaUiQir3I+NQXhYeBlhL3AP4HgD0BvQsAzpHQ/rfacSgSV92Uocx29jyDLaW602nNwSALTPEZMw+F94vZmzNQvykmYRnZVuC26D1NmIXQBXq9BA1hDyjxEfPOCUpco73+M1IJ4ci6ojbc3QOYO84soCyHvtorwGu3RVfkTRrYH5JKI9GPKLOBZvL0hhPIU+ZsHcNT1Asf14wG5DH02FKLOdDoaP8pvvn48IJf/nw3FvSGXpNvm4Xr1gFyGPhvewZSVWJHP3DqvfwMAPP7STdw6ph6HCMJ04CpwGLSXRPSNYmW8/wEKaGXLblw5EwAAAABJRU5ErkJggg=="/></defs></svg>
+                    <svg width="48" height="48" viewBox="0 0 62 61" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="0.850586" width="60.5682" height="60.5682" fill="url(#pattern_bot)"/><defs><pattern id="pattern_bot" patternContentUnits="objectBoundingBox" width="1" height="1"><use href="#image_bot" transform="scale(0.015625)"/></pattern><image id="image_bot" width="64" height="64" href="data:image/png;base64,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"/></defs></svg>
                 </div>
                 <h1 className="text-[#007B9E] text-3xl font-poppins font-bold m-0">JuridiBot</h1>
                 <div className="flex items-center gap-2 text-[#0DE20D]">
