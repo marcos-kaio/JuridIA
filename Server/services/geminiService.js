@@ -2,10 +2,9 @@ import { GoogleGenerativeAI } from "@google/generative-ai";
 import dotenv from "dotenv";
 dotenv.config();
 
-// Inicializa a IA com a nova biblioteca
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_TOKEN);
 
-// Prompt para gerar a comparação estruturada em JSON
+// ... (a função callGeminiForComparison permanece a mesma) ...
 export function buildGeminiComparisonPrompt(originalText) {
   return (
     `Você é um assistente jurídico especializado em simplificar documentos complexos.
@@ -34,7 +33,6 @@ export function buildGeminiComparisonPrompt(originalText) {
   );
 }
 
-// Nova função para chamar o Gemini e esperar um JSON
 export async function callGeminiForComparison(text) {
   const model = genAI.getGenerativeModel({
     model: "gemini-1.5-flash",
@@ -48,13 +46,20 @@ export async function callGeminiForComparison(text) {
   return JSON.parse(jsonText);
 }
 
-// Função de chat atualizada para a nova SDK
-export async function chatWithGemini(messages) {
-  const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
-  const chat = model.startChat({ history: messages.map(m => ({ role: m.role, parts: [{ text: m.text }] })) });
-  const lastMessage = messages[messages.length - 1].text;
+
+// Função de chat ATUALIZADA
+export async function chatWithGemini(history, systemInstruction, userMessage) {
+  // Inicializa o modelo com a instrução do sistema
+  const model = genAI.getGenerativeModel({ 
+    model: "gemini-1.5-flash",
+    systemInstruction: systemInstruction,
+  });
+
+  // Inicia o chat apenas com o histórico de mensagens
+  const chat = model.startChat({ history: history });
   
-  const result = await chat.sendMessage(lastMessage);
+  // Envia a nova mensagem do usuário
+  const result = await chat.sendMessage(userMessage);
   const response = result.response;
   return response.text();
 }

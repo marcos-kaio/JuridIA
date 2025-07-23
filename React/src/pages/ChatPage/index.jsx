@@ -92,6 +92,14 @@ const ChatPage = () => {
 
   const [conversations, setConversations] = useState([]);
 
+  useEffect(() => {
+    const pendingQuestion = sessionStorage.getItem('juridia-question');
+    if (pendingQuestion) {
+      setMessageContent(pendingQuestion);
+      sessionStorage.removeItem('juridia-question');
+    }
+  }, []);
+
   const configureConvos = async () => {
     try {
       const response = await getChats();
