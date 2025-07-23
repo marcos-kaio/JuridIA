@@ -1,34 +1,60 @@
-import { GoogleGenAI } from "@google/genai";
+import { GoogleGenerativeAI } from "@google/generative-ai";
 import dotenv from "dotenv";
 dotenv.config();
 
-const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_TOKEN });
+// Inicializa a IA com a nova biblioteca
+const genAI = new GoogleGenerativeAI(process.env.GEMINI_TOKEN);
 
-export function buildGeminiPdfPrompt(buffer) {
-  return [
-    { text: "Simplifique este documento para leigos:" },
+// Prompt para gerar a comparação estruturada em JSON
+export function buildGeminiComparisonPrompt(originalText) {
+  return (
+    `Você é um assistente jurídico especializado em simplificar documentos complexos.
+    Analise o seguinte texto de contrato e divida-o em parágrafos ou cláusulas significativas.
+    Para cada parte, forneça o texto original e uma versão simplificada em português claro e acessível.
+    Sua resposta DEVE ser um objeto JSON contendo uma única chave "comparison".
+    O valor de "comparison" deve ser um array de objetos, onde cada objeto tem duas chaves: "original" e "simplified".
+
+    Exemplo de Resposta:
     {
-      inlineData: {
-        mimeType: "application/pdf",
-        data: buffer.toString("base64"),
-      },
-    },
-  ];
+      "comparison": [
+        {
+          "original": "Pelo presente instrumento particular de contrato, de um lado: REPRESENTANTE: Sr. Armando César Monteiro...",
+          "simplified": "Este contrato é feito entre duas partes: o Representante, Sr. Armando César Monteiro..."
+        },
+        {
+          "original": "CLÁUSULA PRIMEIRA - DO OBJETO: Concessão total e irrestrita ao REPRESENTANTE de poderes para uso da imagem...",
+          "simplified": "1. Uso de Imagem: Você autoriza o representante a usar sua imagem, voz e nome."
+        }
+      ]
+    }
+
+    Texto do Contrato para Análise:
+    ---
+    ${originalText}`
+  );
 }
 
-export async function callGemini(buffer) {
-  const response = await ai.models.generateContent({
-    model: "gemini-2.0-flash",
-    contents: buildGeminiPdfPrompt(buffer),
+// Nova função para chamar o Gemini e esperar um JSON
+export async function callGeminiForComparison(text) {
+  const model = genAI.getGenerativeModel({
+    model: "gemini-1.5-flash",
+    generationConfig: { responseMimeType: "application/json" },
   });
-  return response.text;
+
+  const prompt = buildGeminiComparisonPrompt(text);
+  const result = await model.generateContent(prompt);
+  const response = result.response;
+  const jsonText = response.text();
+  return JSON.parse(jsonText);
 }
 
+// Função de chat atualizada para a nova SDK
 export async function chatWithGemini(messages) {
-  const contents = messages.map(m => ({ role: m.role, text: m.text }));
-  const response = await ai.models.generateContent({
-    model: "gemini-2.0-flash",
-    contents,
-  });
-  return response.text;
+  const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+  const chat = model.startChat({ history: messages.map(m => ({ role: m.role, parts: [{ text: m.text }] })) });
+  const lastMessage = messages[messages.length - 1].text;
+  
+  const result = await chat.sendMessage(lastMessage);
+  const response = result.response;
+  return response.text();
 }

@@ -28,6 +28,12 @@ export default (sequelize) =>
         allowNull: true,
         field: "original_text",
       },
+      // NOVO CAMPO ADICIONADO
+      comparisonData: {
+        type: DataTypes.JSON,
+        allowNull: true,
+        field: "comparison_data"
+      },
       status: {
         type: DataTypes.STRING(10),
         field: "status",

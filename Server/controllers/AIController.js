@@ -1,13 +1,45 @@
-import { callGemini } from "../services/geminiService.js";
-import { generatePdfFromMarkdown } from "../utils/generatePdf.js";
+import { callGeminiForComparison } from "../services/geminiService.js";
+import { generatePdfFromMarkdown } from "../utils/generatePdf.js"; // Precisamos desta função de volta
 import { Document } from "../models/db.js";
 import pdfParse from "pdf-parse/lib/pdf-parse.js";
 
+// Função auxiliar para esperar um tempo (delay)
+const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+
 export async function simplifyPdfBuffer(buffer) {
   const { text } = await pdfParse(buffer);
-  const simplifiedText = await callGemini(buffer);
-  const pdf = await generatePdfFromMarkdown(simplifiedText);
-  return { originalText: text, simplifiedText, pdf };
+  
+  let attempts = 0;
+  const maxAttempts = 5;
+
+  while (attempts < maxAttempts) {
+    try {
+      const simplifiedJson = await callGeminiForComparison(text);
+      const comparisonData = simplifiedJson.comparison;
+
+      // 1. Juntar todos os textos simplificados do JSON em um único texto (Markdown)
+      const simplifiedMarkdown = comparisonData.map(pair => pair.simplified).join('\n\n');
+      
+      // 2. Gerar o PDF a partir desse texto Markdown
+      const simplifiedPdf = await generatePdfFromMarkdown(simplifiedMarkdown);
+
+      // 3. Retornar tudo o que precisamos
+      return { 
+        originalText: text, 
+        comparisonData: comparisonData,
+        pdf: simplifiedPdf 
+      };
+
+    } catch (error) {
+      attempts++;
+      if (error.status === 503 && attempts < maxAttempts) {
+        console.log(`Modelo sobrecarregado. Tentativa ${attempts} de ${maxAttempts}. Tentando novamente em 2 segundos...`);
+        await delay(2000);
+      } else {
+        throw error;
+      }
+    }
+  }
 }
 
 export default async function AIController(req, res) {
@@ -18,27 +50,29 @@ export default async function AIController(req, res) {
   try {
     if (!pdfBuffer || !userId) throw new Error("Faltando arquivo ou usuário.");
 
-    const { originalText, pdf } = await simplifyPdfBuffer(pdfBuffer);
+    const { originalText, comparisonData, pdf } = await simplifyPdfBuffer(pdfBuffer);
 
     doc = await Document.create({
       userId,
-      originalUrl: pdfBuffer,
-      simplifiedUrl: null,
       originalText,
-      status: "processing",
+      comparisonData,
+      simplifiedUrl: pdf, 
+      status: "done",
     });
 
-    await doc.update({ simplifiedUrl: pdf, status: "done" });
-
-    // Envia o ID do documento no header da resposta
     res.setHeader('X-Document-Id', doc.id);
-    res
-      .header("Content-Type", "application/pdf")
-      .header("Content-Disposition", 'attachment; filename="simplificado.pdf"')
-      .send(pdf);
+    res.status(200).json({
+      message: "Documento simplificado com sucesso!",
+      documentId: doc.id
+    });
+    
   } catch (err) {
     console.error("Erro no AIController:", err);
-    res.status(500).json({ error: "Falha ao simplificar documento." });
+    const errorMessage = err.status === 503 
+      ? "A IA está sobrecarregada no momento. Por favor, tente novamente mais tarde."
+      : "Falha ao simplificar documento.";
+      
+    res.status(500).json({ error: errorMessage });
     if (doc) await doc.update({ status: "error" });
   }
 }
