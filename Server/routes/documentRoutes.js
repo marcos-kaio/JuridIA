@@ -5,13 +5,29 @@ import { Document } from "../models/db.js";
 
 const router = express.Router();
 
-// armazena upload temporariamente num espaço da memória
 const upload = multer({ storage: multer.memoryStorage() });
 
-// Envio de documento para simplificação - /document/simplify
 router.post("/simplify", upload.single("file"), AIControler);
 
-// Rota para baixar o PDF simplificado
+// Rota atualizada para retornar os dados de comparação em JSON
+router.get("/text/:id", async (req, res) => {
+    try {
+        const docId = Number(req.params.id);
+        const doc = await Document.findByPk(docId);
+
+        if (!doc || !doc.comparisonData) {
+            return res.status(404).json({ error: "Dados de comparação não encontrados." });
+        }
+
+        res.json(doc.comparisonData);
+    } catch (error) {
+        console.error("Erro ao buscar dados de comparação:", error);
+        res.status(500).json({ error: "Erro interno ao processar a solicitação." });
+    }
+});
+
+
+// Rota para baixar o PDF simplificado (pode ser mantida ou removida)
 router.get("/download/:id", async (req, res) => {
     try {
         const docId = Number(req.params.id);
