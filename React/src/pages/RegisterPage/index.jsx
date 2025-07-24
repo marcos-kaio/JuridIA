@@ -74,8 +74,7 @@ const RegisterPage = () => {
 
     } catch (err) {
       console.error("Erro ao registrar: ", err);
-      setUserInfo(c => ({ ...c, birthday: userInfo.birthday }));
-      showNotification("Erro! Tente novamente.", 'error');
+      showNotification(err.message, 'error'); 
     }
   }
 

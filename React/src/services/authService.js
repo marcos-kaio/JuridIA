@@ -8,9 +8,11 @@ export async function register({username, email, birthday, escolaridade, passwor
 
     return resp.data;
   } catch (err) {
-    console.error("Erro de autenticação: ", err);
+    const message = err.response?.data?.error || "Ocorreu um erro ao tentar registrar.";
+    throw new Error(message);
   }
 }
+
 
 export async function login({ email, password }) {
   try {
