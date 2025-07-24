@@ -147,11 +147,10 @@ function LandingPage() {
     }`;
 
   return (
-    <>
-      <div className="w-full max-w-[1512px] mx-auto text-[#1F2A44] font-poppins bg-[#F4F7FB]">
-        {/* ===== HEADER ===== */}
-        <header className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between h-32 px-20 bg-[#F4F7FB] shadow-md">
-          <div className="absolute bottom-0 left-20 right-20 h-0.5 bg-[#007B9E]"></div>
+    <div className="w-full text-[#1F2A44] font-poppins bg-[#F4F7FB]">
+      {/* ===== HEADER ===== */}
+      <header className="fixed top-0 left-0 right-0 z-50 h-32 bg-[#F4F7FB] shadow-md">
+        <div className="w-full max-w-[1512px] mx-auto h-full flex items-center justify-between px-20">
           <img className="w-[290px] h-[79px]" src={JuridiaLogo} alt="Logo da JuridIA" />
           <nav className="flex gap-10">
             <a href="#home" className={navLinkClass('home')}>Home</a>
@@ -169,26 +168,29 @@ function LandingPage() {
               <Link to="/register" className="font-bold text-xl rounded-md cursor-pointer no-underline bg-[#F4F7FB] text-[#1F2A44] border border-[#1F2A44] py-3 px-6">Cadastre-se</Link>
             </div>)
           }
-        </header>
+        </div>
+        <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-[#007B9E]"></div>
+      </header>
 
-        <main className="pt-32">
-          {/* ===== HERO SECTION ===== */}
-          <section ref={sectionRefs.home} id="home" className="flex justify-center text-center py-20 px-10">
-            <div className="max-w-[705px]">
-              <h1 className="text-5xl font-bold leading-tight mb-4">Entenda seus contratos de verdade com o poder da <span className="text-[#0DACAC]">IA</span></h1>
-              <p className="font-montserrat text-xl leading-relaxed mb-8">
-                Transforme juridiquês em linguagem simples e visual<br />
-                <span className="text-[#0DACAC] font-bold">Rápido, seguro e direto na palma da sua mão.</span>
-              </p>
-              <button onClick={handleStart} className="inline-block bg-[#0DACAC] text-white font-montserrat text-2xl font-bold rounded-lg border-none py-4 px-20 cursor-pointer no-underline">Comece agora!</button>
-            </div>
-          </section>
+      <main className="pt-32">
+        {/* ===== HERO SECTION ===== */}
+        <section ref={sectionRefs.home} id="home" className="py-20 px-10">
+          <div className="max-w-[705px] mx-auto text-center">
+            <h1 className="text-5xl font-bold leading-tight mb-4">Entenda seus contratos de verdade com o poder da <span className="text-[#0DACAC]">IA</span></h1>
+            <p className="font-montserrat text-xl leading-relaxed mb-8">
+              Transforme juridiquês em linguagem simples e visual<br />
+              <span className="text-[#0DACAC] font-bold">Rápido, seguro e direto na palma da sua mão.</span>
+            </p>
+            <button onClick={handleStart} className="inline-block bg-[#0DACAC] text-white font-montserrat text-2xl font-bold rounded-lg border-none py-4 px-20 cursor-pointer no-underline">Comece agora!</button>
+          </div>
+        </section>
 
-          {/* ===== CONTRACT SIMPLIFIER SECTION ===== */}
-          <section className="flex flex-col items-center text-center py-20 px-10">
+        {/* ===== CONTRACT SIMPLIFIER SECTION ===== */}
+        <section className="py-20 px-10">
+          <div className="max-w-5xl mx-auto flex flex-col items-center text-center">
             <h2 className="text-5xl font-bold leading-tight text-[#1F2A44] mb-6">Simplifique seu contrato</h2>
             <p className="font-montserrat text-xl leading-relaxed max-w-[605px] mb-10">Faça o upload do seu contrato em formato pdf ou .txt e nossa Inteligência Artificial irá fornecer uma explicação clara e concisa dos termos mais importantes.</p>
-            <div className="w-full max-w-5xl bg-[#EBEBEB] shadow-sm rounded-[50px] p-6">
+            <div className="w-full bg-[#EBEBEB] shadow-sm rounded-[50px] p-6">
               <input type="file" ref={fileInputRef} onChange={handleFileChange} accept="application/pdf,.txt" className="hidden"/>
               <div className="h-[186px] bg-[rgba(226,232,240,0.24)] shadow-inner rounded-[37px] flex items-center justify-center border-2 border-dashed border-[#b0b0b0] mb-6 cursor-pointer text-black text-4xl" onClick={handleAreaClick}>
                 <p>{fileName}</p>
@@ -197,10 +199,12 @@ function LandingPage() {
                 {loading ? 'Simplificando...' : 'Simplificar contrato'}
               </button>
             </div>
-          </section>
+          </div>
+        </section>
 
-          {/* ===== HOW IT WORKS SECTION ===== */}
-          <section ref={sectionRefs['how-it-works']} id="how-it-works" className="flex flex-col items-center text-center py-20 px-10 scroll-mt-32">
+        {/* ===== HOW IT WORKS SECTION ===== */}
+        <section ref={sectionRefs['how-it-works']} id="how-it-works" className="py-20 px-10 scroll-mt-32">
+          <div className="max-w-[1512px] mx-auto flex flex-col items-center text-center">
             <h2 className="text-5xl font-bold leading-tight text-[#1F2A44] mb-6">Como funciona?</h2>
             <div className="flex justify-center gap-8 flex-wrap w-full">
               <div className="w-[410px] bg-[#1F2A44] shadow-md rounded-[50px] p-12 text-[#F4F7FB]">
@@ -216,25 +220,29 @@ function LandingPage() {
                 <p className="font-montserrat text-xl font-bold leading-relaxed">Obtenha uma explicação clara e objetiva do seu contrato, em linguagem acessível.</p>
               </div>
             </div>
-          </section>
+          </div>
+        </section>
 
-          {/* ===== ABOUT SECTION ===== */}
-          <section ref={sectionRefs.about} id="about" className="bg-white flex flex-col items-center text-center py-20 px-10 scroll-mt-32">
+        {/* ===== ABOUT SECTION ===== */}
+        <section ref={sectionRefs.about} id="about" className="bg-white py-20 px-10 scroll-mt-32">
+          <div className="max-w-6xl mx-auto text-center">
             <h2 className="text-5xl font-bold leading-tight text-[#1F2A44] mb-6">Sobre a JuridIA</h2>
-            <p className="text-3xl leading-relaxed max-w-6xl">
+            <p className="text-3xl leading-relaxed">
               Na JuridIA, acreditamos que todos têm o direito de entender completamente os documentos que assinam. Nossa missão é quebrar as barreiras do <span className="text-[#0DACAC]">"juridiquês"</span>, utilizando o poder da Inteligência Artificial para tornar contratos e termos legais acessíveis a todos.<br/>Combinamos tecnologia de ponta com um compromisso com a clareza e a simplicidade, para que você possa tomar decisões informadas com confiança.
             </p>
-          </section>
+          </div>
+        </section>
 
-          {/* ===== FAQ SECTION (ESTILO BOTÕES AZUIS) ===== */}
-          <section ref={sectionRefs.faq} id="faq" className="flex flex-col items-center text-center py-20 px-10 scroll-mt-32">
+        {/* ===== FAQ SECTION ===== */}
+        <section ref={sectionRefs.faq} id="faq" className="py-20 px-10 scroll-mt-32">
+          <div className="w-full max-w-4xl mx-auto flex flex-col items-center">
             <h2 className="text-5xl font-bold leading-tight text-[#1F2A44] mb-12">Perguntas Frequentes</h2>
-            <div className="w-full max-w-4xl flex flex-col gap-5">
+            <div className="w-full flex flex-col gap-5">
                 {faqData.map((item, index) => (
                     <div key={index}>
                         <button
                             onClick={() => handleFaqClick(index)}
-                            className={`w-full flex justify-between items-center text-left p-8 bg-[#0DACAC] text-white text-2xl font-semibold shadow-md transition-all duration-300 focus:outline-none
+                            className={`w-full flex justify-between items-center text-left p-8 bg-[#0DACAC] text-white text-2xl font-semibold shadow-inner transition-all duration-300 focus:outline-none 
                             ${openFaqIndex === index ? 'rounded-t-2xl' : 'rounded-2xl'}`}
                         >
                             <span>{item.question}</span>
@@ -254,16 +262,18 @@ function LandingPage() {
                     </div>
                 ))}
             </div>
+          </div>
         </section>
-        </main>
+      </main>
 
-        {/* ===== FOOTER ===== */}
-        <footer className="bg-[#1F2A44] text-white text-center py-10 px-5">
-          <p className="m-0 font-light text-3xl">© JuridIA. Todos os direitos reservados.</p>
-          <p className="m-0 font-extralight text-2xl mt-2">Simplificando o complexo, um contrato por vez.</p>
-        </footer>
-      </div>
-    </>
+      {/* ===== FOOTER ===== */}
+      <footer className="bg-[#1F2A44] text-white text-center py-10 px-5">
+          <div className="max-w-[1512px] mx-auto">
+            <p className="m-0 font-light text-3xl">© JuridIA. Todos os direitos reservados.</p>
+            <p className="m-0 font-extralight text-2xl mt-2">Simplificando o complexo, um contrato por vez.</p>
+          </div>
+      </footer>
+    </div>
   );
 }
 
