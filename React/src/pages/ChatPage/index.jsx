@@ -4,7 +4,7 @@ import { getChats, getChathistory, sendMessage, uploadAndSimplifyPdf, deleteChat
 import ReactMarkdown from "react-markdown";
 import { useNotification } from '../../context/NotificationContext';
 import MainPopUp from '../../components/MainPopUp';
-import juridiaLogoLivro from '../../assets/juridia_logo_livro.jpg'; // Importe a nova imagem
+import juridiaLogoLivro from '../../assets/juridia_logo_livro.png'; // Importe a nova imagem
 
 // --- Ícones e Componentes Utilitários ---
 const TrashIcon = ({...props}) => (

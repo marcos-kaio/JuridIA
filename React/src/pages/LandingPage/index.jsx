@@ -1,9 +1,29 @@
-import JuridiaLogo from '../../assets/juridia_logo.jpg';
+import JuridiaLogo from '../../assets/juridia_logo.png';
 import { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { checkAuth } from '../../services/authService';
 import { uploadAndSimplifyPdf } from '../../services/chatService';
 import { useNotification } from '../../context/NotificationContext';
+
+// Conteúdo do FAQ
+const faqData = [
+    {
+      question: "A JuridIA é segura para usar com meus documentos?",
+      answer: "Sim. A segurança é nossa prioridade. Seus documentos são processados de forma segura e não são armazenados em nossos servidores após a simplificação, garantindo total confidencialidade e privacidade das suas informações."
+    },
+    {
+      question: "Quais tipos de arquivo posso enviar?",
+      answer: "Atualmente, nossa plataforma aceita o envio de documentos no formato PDF. Estamos trabalhando para suportar outros formatos, como .docx e .txt, em breve."
+    },
+    {
+      question: "A simplificação da IA substitui um advogado?",
+      answer: "Não. A JuridIA é uma ferramenta poderosa para ajudar você a entender melhor seus documentos, traduzindo o 'juridiquês' para uma linguagem clara. No entanto, ela não substitui o conselho de um profissional de direito qualificado. Para decisões legais importantes, sempre recomendamos consultar um advogado."
+    },
+    {
+      question: "Quão precisa é a análise da IA?",
+      answer: "Nossa IA é treinada com um vasto conjunto de dados jurídicos para fornecer resumos e explicações precisas. Ela é excelente para identificar cláusulas importantes, obrigações e termos complexos. Contudo, como toda tecnologia de IA, ela é uma ferramenta de suporte e a revisão humana é sempre aconselhada."
+    }
+];
 
 function LandingPage() {
   const [file, setFile] = useState(null);
@@ -14,8 +34,12 @@ function LandingPage() {
   const navigate = useNavigate();
   const fileInputRef = useRef(null);
   const { showNotification } = useNotification();
+  const [openFaqIndex, setOpenFaqIndex] = useState(null);
 
-  // Refs para cada seção que queremos observar
+  const handleFaqClick = (index) => {
+    setOpenFaqIndex(openFaqIndex === index ? null : index);
+  };
+
   const sectionRefs = {
     home: useRef(null),
     'how-it-works': useRef(null),
@@ -24,7 +48,6 @@ function LandingPage() {
   };
 
   useEffect(() => {
-    // Lógica do Intersection Observer para destacar o link ativo
     const observerCallback = (entries) => {
       entries.forEach((entry) => {
         if (entry.isIntersecting) {
@@ -34,19 +57,17 @@ function LandingPage() {
     };
 
     const observer = new IntersectionObserver(observerCallback, {
-      root: null, // Observa em relação ao viewport
+      root: null,
       rootMargin: '0px',
-      threshold: 0.4, // Ativa quando 40% da seção está visível
+      threshold: 0.4,
     });
 
-    // Anexa o observer a cada uma das seções
     Object.values(sectionRefs).forEach((ref) => {
       if (ref.current) {
         observer.observe(ref.current);
       }
     });
 
-    // Limpeza ao desmontar o componente
     return () => {
       Object.values(sectionRefs).forEach((ref) => {
         if (ref.current) {
@@ -54,7 +75,7 @@ function LandingPage() {
         }
       });
     };
-  }, []); // Executa apenas uma vez
+  }, []);
 
   useEffect(() => {
     async function verificarLogin() {
@@ -118,7 +139,6 @@ function LandingPage() {
     }
   };
 
-  // Função para gerar as classes do link de navegação dinamicamente
   const navLinkClass = (sectionId) =>
     `text-xl font-semibold no-underline py-2.5 transition-colors ${
       activeSection === sectionId
@@ -206,16 +226,35 @@ function LandingPage() {
             </p>
           </section>
 
-          {/* ===== FAQ SECTION ===== */}
+          {/* ===== FAQ SECTION (ESTILO BOTÕES AZUIS) ===== */}
           <section ref={sectionRefs.faq} id="faq" className="flex flex-col items-center text-center py-20 px-10 scroll-mt-32">
-            <h2 className="text-5xl font-bold leading-tight text-[#1F2A44] mb-6">Perguntas Frequentes</h2>
-            <div className="flex flex-col gap-5 w-full max-w-4xl mt-10">
-              <div className="bg-[#0DACAC] shadow-inner rounded-3xl p-8 text-white text-3xl font-semibold text-left cursor-pointer">A JuridIA é segura para usar com meus contratos?</div>
-              <div className="bg-[#0DACAC] shadow-inner rounded-3xl p-8 text-white text-3xl font-semibold text-left cursor-pointer">Quais tipos de arquivo posso enviar?</div>
-              <div className="bg-[#0DACAC] shadow-inner rounded-3xl p-8 text-white text-3xl font-semibold text-left cursor-pointer">Quão precisa é a simplificação da IA?</div>
-              <div className="bg-[#0DACAC] shadow-inner rounded-3xl p-8 text-white text-3xl font-semibold text-left cursor-pointer">A IA consegue entender qualquer tipo de contrato?</div>
+            <h2 className="text-5xl font-bold leading-tight text-[#1F2A44] mb-12">Perguntas Frequentes</h2>
+            <div className="w-full max-w-4xl flex flex-col gap-5">
+                {faqData.map((item, index) => (
+                    <div key={index}>
+                        <button
+                            onClick={() => handleFaqClick(index)}
+                            className={`w-full flex justify-between items-center text-left p-8 bg-[#0DACAC] text-white text-2xl font-semibold shadow-md transition-all duration-300 focus:outline-none
+                            ${openFaqIndex === index ? 'rounded-t-2xl' : 'rounded-2xl'}`}
+                        >
+                            <span>{item.question}</span>
+                            <span className="text-3xl transform transition-transform duration-300">
+                                {openFaqIndex === index ? '−' : '+'}
+                            </span>
+                        </button>
+                        <div
+                            className={`overflow-hidden transition-all duration-500 ease-in-out ${
+                                openFaqIndex === index ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'
+                            }`}
+                        >
+                            <p className="p-6 text-left text-lg bg-gray-100 text-[#1F2A44] rounded-b-2xl">
+                                {item.answer}
+                            </p>
+                        </div>
+                    </div>
+                ))}
             </div>
-          </section>
+        </section>
         </main>
 
         {/* ===== FOOTER ===== */}
