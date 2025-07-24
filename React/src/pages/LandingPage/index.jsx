@@ -1,4 +1,4 @@
-import JuridiaLogo from '../../assets/juridia_logo.png';
+import JuridiaLogo from '../../assets/juridia_logo.jpg';
 import { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { checkAuth } from '../../services/authService';

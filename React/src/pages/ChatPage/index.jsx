@@ -4,6 +4,7 @@ import { getChats, getChathistory, sendMessage, uploadAndSimplifyPdf, deleteChat
 import ReactMarkdown from "react-markdown";
 import { useNotification } from '../../context/NotificationContext';
 import MainPopUp from '../../components/MainPopUp';
+import juridiaLogoLivro from '../../assets/juridia_logo_livro.jpg'; // Importe a nova imagem
 
 // --- Ícones e Componentes Utilitários ---
 const TrashIcon = ({...props}) => (
@@ -22,16 +23,16 @@ const ConversationItem = ({ text, isActive = false, onChangeChat, onDelete }) =>
       : 'bg-[#F4F7FB] border-[#0DACAC] text-[#0DACAC]'
     }`}
   >
-    <button 
-      onClick={onChangeChat} 
+    <button
+      onClick={onChangeChat}
       title={text}
       className="w-full text-left text-lg font-semibold font-montserrat cursor-pointer bg-transparent border-none overflow-hidden whitespace-nowrap text-ellipsis pr-8"
     >
       {text}
     </button>
-    <button 
-        onClick={onDelete} 
-        className={`absolute right-2 p-1 rounded-full transition-opacity opacity-0 group-hover:opacity-100 
+    <button
+        onClick={onDelete}
+        className={`absolute right-2 p-1 rounded-full transition-opacity opacity-0 group-hover:opacity-100
         ${isActive ? 'text-white hover:bg-white/20' : 'text-red-500 hover:bg-red-100'}`}
         aria-label="Deletar conversa"
     >
@@ -56,7 +57,6 @@ const BotMessage = ({botContent}) => (
     </div>
 );
 
-// --- NOVO COMPONENTE DE LOADING ---
 const BotLoadingMessage = () => (
     <div className="flex justify-start w-full">
         <div className="max-w-[75%] py-4 px-5 rounded-2xl text-base leading-normal bg-[#0DACAC] text-white rounded-tl-none">
@@ -124,7 +124,7 @@ const ChatPage = () => {
 
     try {
         await deleteChat(chatToDelete.id);
-        
+
         const updatedConversations = conversations.filter(c => c.id !== chatToDelete.id);
         setConversations(updatedConversations);
 
@@ -164,9 +164,9 @@ const ChatPage = () => {
           hasPdf: chat.status === "done",
           updatedAt: chat.updatedAt,
         }));
-        
+
         setConversations(parsedChats);
-        
+
         if (parsedChats.length > 0 && !conversations.some(c => c.id === activeConversationId)) {
           setActiveConversationId(parsedChats[0].id);
         }
@@ -197,7 +197,7 @@ const ChatPage = () => {
   useEffect(() => {
       fetchHistory();
   }, [activeConversationId]);
-  
+
   const handleNewChat = () => {
     const existingNewChat = conversations.find(c => c.id.toString().startsWith('new-chat-'));
     if (existingNewChat) {
@@ -212,13 +212,12 @@ const ChatPage = () => {
       hasPdf: false,
       updatedAt: new Date().toISOString()
     };
-    
+
     setConversations(c => [newConversation, ...c]);
     setActiveConversationId(newChatId);
     setMessages([]);
   }
 
-  // --- FUNÇÃO DE ENVIAR MENSAGEM ATUALIZADA ---
   const handleSendMessage = async () => {
     if (messageContent.trim() === "") return;
 
@@ -276,25 +275,25 @@ const ChatPage = () => {
     const formData = new FormData();
     formData.append('file', file);
     setIsSimplifying(true);
-  
+
     try {
       const resp = await uploadAndSimplifyPdf(formData);
-      
+
       const newConvoIdHeader = resp.headers['x-document-id'];
       if (!newConvoIdHeader) {
           throw new Error("ID do novo documento não foi retornado pelo servidor.");
       }
-      
+
       const newConvoId = parseInt(newConvoIdHeader, 10);
       if (isNaN(newConvoId)) {
         throw new Error("ID retornado pelo servidor é inválido.");
       }
-      
-      await configureConvos(); 
+
+      await configureConvos();
       setActiveConversationId(newConvoId);
-      
+
       showNotification('Documento simplificado com sucesso!', 'success');
-  
+
     } catch (error) {
       console.error("Erro ao simplificar o PDF:", error);
       const errorMessage = error.response?.data?.error || `Ocorreu um erro ao simplificar o arquivo.`;
@@ -326,7 +325,7 @@ const ChatPage = () => {
         showNotification("Não foi possível obter o arquivo.", 'error');
     }
   };
-  
+
   const handleCompare = (docId) => {
     navigate(`/compare/${docId}`);
   };
@@ -339,17 +338,17 @@ const ChatPage = () => {
                 <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 11V6m0 8h.01M19 10a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/>
             </svg>
             <h3 className="mb-5 text-lg font-normal text-gray-200">
-                Tem certeza que deseja excluir a conversa <br/> 
+                Tem certeza que deseja excluir a conversa <br/>
                 <span className="font-medium text-white break-all">"{chatToDelete?.title}"</span>?
             </h3>
             <div className="flex justify-center gap-4">
-                <button 
+                <button
                     onClick={handleCloseDeleteModal}
                     className="px-6 py-2 rounded-lg bg-gray-600 text-white font-semibold hover:bg-gray-500 transition-colors"
                 >
                     Cancelar
                 </button>
-                <button 
+                <button
                     onClick={handleConfirmDelete}
                     className="px-6 py-2 rounded-lg bg-red-600 text-white font-semibold hover:bg-red-500 transition-colors"
                 >
@@ -388,9 +387,7 @@ const ChatPage = () => {
         <main className="flex-grow bg-[#F4F7FB] rounded-lg my-5 mr-5 md:my-5 md:mr-5 md:ml-0 flex flex-col overflow-hidden border-2 border-[#007B9E]">
           <header className="p-4 px-6 flex items-center justify-between gap-4 border-b border-[#007B9E]">
               <div className='flex items-center gap-4'>
-                  <div className="bot-identity">
-                      <svg width="48" height="48" viewBox="0 0 62 61" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="0.850586" width="60.5682" height="60.5682" fill="url(#pattern_bot)"/><defs><pattern id="pattern_bot" patternContentUnits="objectBoundingBox" width="1" height="1"><use href="#image_bot" transform="scale(0.015625)"/></pattern><image id="image_bot" width="64" height="64" href="data:image/png;base64,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"/></defs></svg>
-                  </div>
+                  <img src={juridiaLogoLivro} alt="JuridIA Logo" className="h-12" />
                   <h1 className="text-[#007B9E] text-3xl font-poppins font-bold m-0">JuridiBot</h1>
                   <div className="flex items-center gap-2 text-[#0DE20D]">
                       <div className="w-3 h-3 bg-[#0DE20D] rounded-full"></div>
@@ -421,14 +418,13 @@ const ChatPage = () => {
                   isLoading={isSimplifying}
               />
             )}
-            {/* --- LÓGICA DE RENDERIZAÇÃO DE MENSAGEM ATUALIZADA --- */}
             {messages.map((msg, index) => {
               const messageKey = msg.id || msg.tempId || `${msg.role}-${index}`;
-              
+
               if (msg.isLoading) {
                 return <BotLoadingMessage key={messageKey} />;
               }
-              
+
               return msg.role === 'user'
                 ? <UserMessage key={messageKey} userContent={msg.content} />
                 : <BotMessage key={messageKey} botContent={msg.content} />
