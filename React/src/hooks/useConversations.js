@@ -16,18 +16,17 @@ export const useConversations = () => {
         const parsedChats = response.data.map((chat) => ({
           id: chat.id,
           title: chat.title || `Conversa ${chat.id}`,
-          hasPdf: chat.status === "done",
+          hasPdf: chat.status === 'done',
           updatedAt: chat.updatedAt,
         }));
         setConversations(parsedChats);
-        // Define a primeira conversa como ativa se nenhuma estiver
         if (parsedChats.length > 0 && !activeConversationId) {
           setActiveConversationId(parsedChats[0].id);
         }
       }
     } catch (error) {
-      console.error("Erro ao buscar conversas:", error);
-      showNotification("Não foi possível carregar as conversas.", 'error');
+      console.error('Erro ao buscar conversas:', error);
+      showNotification('Não foi possível carregar as conversas.', 'error');
     }
   }, [activeConversationId, showNotification]);
 
@@ -35,21 +34,23 @@ export const useConversations = () => {
     fetchConversations();
   }, [fetchConversations]);
 
-  const handleOpenDeleteModal = (id, title) => {
+  const handleOpenDeleteModal = useCallback((id, title) => {
     setChatToDelete({ id, title });
     setIsDeleteModalOpen(true);
-  };
+  }, []);
 
-  const handleCloseDeleteModal = () => {
+  const handleCloseDeleteModal = useCallback(() => {
     setIsDeleteModalOpen(false);
     setChatToDelete(null);
-  };
+  }, []);
 
-  const handleConfirmDelete = async () => {
+  const handleConfirmDelete = useCallback(async () => {
     if (!chatToDelete) return;
     try {
       await deleteChat(chatToDelete.id);
-      const updatedConversations = conversations.filter(c => c.id !== chatToDelete.id);
+      const updatedConversations = conversations.filter(
+        (c) => c.id !== chatToDelete.id
+      );
       setConversations(updatedConversations);
 
       if (activeConversationId === chatToDelete.id) {
@@ -57,25 +58,30 @@ export const useConversations = () => {
       }
       showNotification('Conversa deletada com sucesso!', 'success');
     } catch (error) {
-      console.error("Erro ao deletar a conversa:", error);
-      showNotification("Não foi possível deletar a conversa.", 'error');
+      console.error('Erro ao deletar a conversa:', error);
+      showNotification('Não foi possível deletar a conversa.', 'error');
     } finally {
       handleCloseDeleteModal();
     }
-  };
-  
-  const handleNewChat = () => {
-     const newChatId = `new-chat-${Date.now()}`;
-     const newConversation = {
-       id: newChatId,
-       title: `Nova Conversa`,
-       hasPdf: false,
-       updatedAt: new Date().toISOString()
-     };
-     setConversations(c => [newConversation, ...c]);
-     setActiveConversationId(newChatId);
-  };
+  }, [
+    chatToDelete,
+    conversations,
+    activeConversationId,
+    showNotification,
+    handleCloseDeleteModal,
+  ]);
 
+  const handleNewChat = useCallback(() => {
+    const newChatId = `new-chat-${Date.now()}`;
+    const newConversation = {
+      id: newChatId,
+      title: `Nova Conversa`,
+      hasPdf: false,
+      updatedAt: new Date().toISOString(),
+    };
+    setConversations((c) => [newConversation, ...c]);
+    setActiveConversationId(newChatId);
+  }, []);
 
   return {
     conversations,
@@ -87,6 +93,6 @@ export const useConversations = () => {
     handleCloseDeleteModal,
     handleConfirmDelete,
     handleNewChat,
-    fetchConversations
+    fetchConversations,
   };
 };
