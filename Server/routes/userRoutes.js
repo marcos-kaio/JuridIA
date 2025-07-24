@@ -50,12 +50,11 @@ router.post("/register", async (req, res) => {
       created_at: newUser.createdAt,
     });
   } catch (err) {
-    console.error("Erro ao criar usuário:", err);
-    return res.status(500).json({ "Erro interno ao cadastrar usuário": err });
+    console.error("Erro detalhado ao criar usuário:", err.message, err);
+    return res.status(500).json({ "Erro interno ao cadastrar usuário": err.message });
   }
 });
 
-// fazer login - /user/login
 router.post("/login", async (req, res) => {
   const { email, password } = req.body;
   if (!email || !password)

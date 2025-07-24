@@ -36,20 +36,11 @@ export default (sequelize) =>
         type: DataTypes.STRING(255),
         field: "password",
       },
-      createdAt: {
-        type: DataTypes.DATE,
-        field: "created_at",
-        allowNull: false,
-      },
-      updatedAt: {
-        type: DataTypes.DATE,
-        field: "updated_at",
-        allowNull: false,
-      },
+
     },
     {
       tableName: "users",
-      timestamps: true,
+      timestamps: true,  
       underscored: true,
     }
   );
