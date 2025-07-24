@@ -1,6 +1,6 @@
 import { callGeminiForComparison } from "../services/geminiService.js";
 import { generatePdfFromMarkdown } from "../utils/generatePdf.js";
-import { Document } from "../models/db.js";
+import { Document, Chat } from "../models/db.js"; // Importar o modelo Chat
 import pdfParse from "pdf-parse/lib/pdf-parse.js";
 
 const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
@@ -56,6 +56,15 @@ export default async function AIController(req, res) {
       simplifiedUrl: pdf,
       status: "done",
     });
+
+    // Adiciona a mensagem inicial do bot ao histórico do chat
+    if (doc) {
+        await Chat.create({
+            documentId: doc.id,
+            role: 'ai',
+            content: 'Seu documento foi simplificado! Em que posso ajudar? Fique à vontade para perguntar qualquer coisa sobre o conteúdo.'
+        });
+    }
 
     res.setHeader('X-Document-Id', doc.id);
     res.status(200).json({
