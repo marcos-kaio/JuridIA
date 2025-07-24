@@ -1,35 +1,31 @@
 import { callGeminiForComparison } from "../services/geminiService.js";
-import { generatePdfFromMarkdown } from "../utils/generatePdf.js"; // Precisamos desta função de volta
-import { Document } from "../models/db.js";
+import { generatePdfFromMarkdown } from "../utils/generatePdf.js";
+import { Document, Chat } from "../models/db.js"; // Importar o modelo Chat
 import pdfParse from "pdf-parse/lib/pdf-parse.js";
 
-// Função auxiliar para esperar um tempo (delay)
 const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
 export async function simplifyPdfBuffer(buffer) {
   const { text } = await pdfParse(buffer);
   
   let attempts = 0;
-  const maxAttempts = 5;
+  const maxAttempts = 3;
 
   while (attempts < maxAttempts) {
     try {
       const simplifiedJson = await callGeminiForComparison(text);
       const comparisonData = simplifiedJson.comparison;
-
-      // 1. Juntar todos os textos simplificados do JSON em um único texto (Markdown)
-      const simplifiedMarkdown = comparisonData.map(pair => pair.simplified).join('\n\n');
+      const title = simplifiedJson.title; // Extrai o novo título
       
-      // 2. Gerar o PDF a partir desse texto Markdown
+      const simplifiedMarkdown = comparisonData.map(pair => pair.simplified).join('\n\n');
       const simplifiedPdf = await generatePdfFromMarkdown(simplifiedMarkdown);
-
-      // 3. Retornar tudo o que precisamos
+      
       return { 
         originalText: text, 
+        title: title, // Retorna o título
         comparisonData: comparisonData,
         pdf: simplifiedPdf 
       };
-
     } catch (error) {
       attempts++;
       if (error.status === 503 && attempts < maxAttempts) {
@@ -50,15 +46,25 @@ export default async function AIController(req, res) {
   try {
     if (!pdfBuffer || !userId) throw new Error("Faltando arquivo ou usuário.");
 
-    const { originalText, comparisonData, pdf } = await simplifyPdfBuffer(pdfBuffer);
+    const { originalText, title, comparisonData, pdf } = await simplifyPdfBuffer(pdfBuffer);
 
     doc = await Document.create({
       userId,
       originalText,
+      title, // Salva o título no banco
       comparisonData,
-      simplifiedUrl: pdf, 
+      simplifiedUrl: pdf,
       status: "done",
     });
+
+    // Adiciona a mensagem inicial do bot ao histórico do chat
+    if (doc) {
+        await Chat.create({
+            documentId: doc.id,
+            role: 'ai',
+            content: 'Seu documento foi simplificado! Em que posso ajudar? Fique à vontade para perguntar qualquer coisa sobre o conteúdo.'
+        });
+    }
 
     res.setHeader('X-Document-Id', doc.id);
     res.status(200).json({

@@ -15,10 +15,15 @@ export async function ChatController(req, res) {
       where: { documentId: docId },
       order: [["dateTime", "ASC"]],
     });
+
+    let historyForApi = [...historyFromDb];
+    if (historyForApi.length > 0 && historyForApi[0].role === 'ai') {
+        historyForApi.shift(); // Remove a primeira mensagem (a do bot)
+    }
     
-    // 2. Cria a instrução do sistema e formata o histórico separadamente
+    // 2. Cria a instrução do sistema e formata o histórico (já corrigido)
     const systemInstruction = buildSystemInstruction(doc);
-    const formattedHistory = formatChatHistory(historyFromDb);
+    const formattedHistory = formatChatHistory(historyForApi);
 
     // 3. Chama a IA com os parâmetros corretos
     const aiReply = await chatWithGemini(formattedHistory, systemInstruction, userMessage);

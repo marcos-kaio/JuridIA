@@ -1,18 +1,19 @@
 import { useEffect, useState } from "react";
 import { checkAuth, login } from "../../services/authService.js";
 import { useNavigate } from "react-router-dom";
-import { useNotification } from "../../context/NotificationContext.jsx"; // Importe o hook
+import { useNotification } from "../../context/NotificationContext.jsx";
+import JuridiaLogo from '../../assets/juridia_logo_texto_branco.png'; 
 
 const LoginIllustration = () => (
-  <div className="max-w-[600px]">
-    <p className="text-3xl text-white">Ilustração aqui</p>
+  <div className="max-w-[600px] px-8">
+    <img src={JuridiaLogo} alt="Logo JuridIA" />
   </div>
 );
 
 const LoginPage = () => {
   const [credenciais, setCredenciais] = useState({ email: "", password: "" });
   const navigate = useNavigate();
-  const { showNotification } = useNotification(); // Use o hook
+  const { showNotification } = useNotification();
 
   useEffect(() => {
     (async () => {
@@ -31,15 +32,14 @@ const LoginPage = () => {
     e.preventDefault();
     try {
       const data = await login(credenciais);
-      showNotification(`${data.username}, você foi logado com sucesso!`, 'success'); // Substitua o alert
+      showNotification(`${data.username}, você foi logado com sucesso!`, 'success');
       navigate("/", { replace: true });
     } catch (err) {
-      showNotification("Credenciais inválidas!", 'error'); // Substitua o alert
+      showNotification("Credenciais inválidas!", 'error');
     }
   }
 
   return (
-    // ... (o resto do seu JSX continua o mesmo)
     <div className="flex w-full min-h-screen font-sans">
       <div className="hidden lg:flex lg:w-[47%] bg-[#1F2A44] justify-center items-center">
         <LoginIllustration />
