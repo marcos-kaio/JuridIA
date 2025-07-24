@@ -5,7 +5,7 @@ import ReactMarkdown from "react-markdown";
 import { useNotification } from '../../context/NotificationContext';
 import MainPopUp from '../../components/MainPopUp';
 
-// --- (Componentes TrashIcon, ConversationItem, etc. continuam os mesmos) ---
+// --- Ícones e Componentes Utilitários ---
 const TrashIcon = ({...props}) => (
     <svg {...props} xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
         <path d="M3 6h18"/>
@@ -40,25 +40,35 @@ const ConversationItem = ({ text, isActive = false, onChangeChat, onDelete }) =>
   </div>
 );
 
-const UserMessage = ({userContent, sent=false, onClickFile=null}) => {
-  return(
+const UserMessage = ({userContent}) => (
     <div className="flex justify-end w-full">
       <div className="max-w-[75%] py-4 px-5 rounded-2xl text-base leading-normal bg-[#E2E8F0] text-black rounded-tr-none">
-        <span onClick={onClickFile} className={sent ? "font-semibold cursor-pointer underline" : ""}>{userContent}</span>
+        <span>{userContent}</span>
       </div>
     </div>
-  )
-}
+);
 
-const BotMessage = ({botContent}) => {
-  return (
+const BotMessage = ({botContent}) => (
     <div className="flex justify-start w-full">
       <div className="max-w-[75%] py-4 px-5 rounded-2xl text-base leading-normal bg-[#0DACAC] text-white rounded-tl-none">
         <ReactMarkdown>{botContent}</ReactMarkdown>
       </div>
     </div>
-  )
-}
+);
+
+// --- NOVO COMPONENTE DE LOADING ---
+const BotLoadingMessage = () => (
+    <div className="flex justify-start w-full">
+        <div className="max-w-[75%] py-4 px-5 rounded-2xl text-base leading-normal bg-[#0DACAC] text-white rounded-tl-none">
+            <div className="flex items-center justify-center space-x-1">
+                <span className="w-2 h-2 bg-white rounded-full animate-pulse [animation-delay:-0.3s]"></span>
+                <span className="w-2 h-2 bg-white rounded-full animate-pulse [animation-delay:-0.15s]"></span>
+                <span className="w-2 h-2 bg-white rounded-full animate-pulse"></span>
+            </div>
+        </div>
+    </div>
+);
+
 
 const SendPdf = ({OnFileChange, file, OnSimplify, isLoading}) => {
   const isFileSelected = file !== "Nenhum arquivo selecionado";
@@ -83,7 +93,6 @@ const SendPdf = ({OnFileChange, file, OnSimplify, isLoading}) => {
     </div>
   )
 }
-
 
 const ChatPage = () => {
   const [activeConversationId, setActiveConversationId] = useState();
@@ -209,28 +218,26 @@ const ChatPage = () => {
     setMessages([]);
   }
 
+  // --- FUNÇÃO DE ENVIAR MENSAGEM ATUALIZADA ---
   const handleSendMessage = async () => {
-    if (messageContent.trim() === ""){
-      return;
-    }
-    const userMessageForUI = {
-      role: 'user',
-      content: messageContent,
-      tempId: Date.now(),
-    };
+    if (messageContent.trim() === "") return;
+
+    const userMessageForUI = { role: 'user', content: messageContent, tempId: `user-${Date.now()}` };
+    const loadingMessageForUI = { role: 'ai', isLoading: true, tempId: `loading-${Date.now()}` };
 
     const message = messageContent;
     setMessageContent("");
-    setMessages(prevMessages => [...prevMessages, userMessageForUI]);
+    setMessages(prevMessages => [...prevMessages, userMessageForUI, loadingMessageForUI]);
 
-    try{
+    try {
       await sendMessage(activeConversationId, message);
       await fetchHistory();
       await configureConvos();
-    } catch (err){
+    } catch (err) {
       console.error("Erro ao enviar mensagem: ", err);
+      showNotification("Erro ao obter resposta da IA.", 'error');
       setMessages(prevMessages =>
-        prevMessages.filter(msg => msg.tempId !== userMessageForUI.tempId)
+        prevMessages.filter(msg => msg.tempId !== userMessageForUI.tempId && msg.tempId !== loadingMessageForUI.tempId)
       );
     }
   }
@@ -285,7 +292,7 @@ const ChatPage = () => {
       
       await configureConvos(); 
       setActiveConversationId(newConvoId);
-      setMessages([]);
+      
       showNotification('Documento simplificado com sucesso!', 'success');
   
     } catch (error) {
@@ -326,7 +333,6 @@ const ChatPage = () => {
 
   return (
     <>
-      {/* --- CÓDIGO DO POP-UP ATUALIZADO --- */}
       <MainPopUp isOpen={isDeleteModalOpen} onClose={handleCloseDeleteModal}>
         <div className="text-center p-4">
             <svg className="mx-auto mb-4 w-12 h-12 text-gray-300" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
@@ -415,13 +421,17 @@ const ChatPage = () => {
                   isLoading={isSimplifying}
               />
             )}
+            {/* --- LÓGICA DE RENDERIZAÇÃO DE MENSAGEM ATUALIZADA --- */}
             {messages.map((msg, index) => {
               const messageKey = msg.id || msg.tempId || `${msg.role}-${index}`;
+              
+              if (msg.isLoading) {
+                return <BotLoadingMessage key={messageKey} />;
+              }
               
               return msg.role === 'user'
                 ? <UserMessage key={messageKey} userContent={msg.content} />
                 : <BotMessage key={messageKey} botContent={msg.content} />
-              
             })}
           </div>
           <footer className="p-5 px-7 bg-[#F4F7FB]">
