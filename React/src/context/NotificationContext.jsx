@@ -11,9 +11,6 @@ export const NotificationProvider = ({ children }) => {
 
   const showNotification = useCallback((message, type = 'info') => {
     setNotification({ message, type });
-    setTimeout(() => {
-      setNotification(null);
-    }, 4000); // A notificação desaparece após 4 segundos
   }, []);
 
   const value = {
