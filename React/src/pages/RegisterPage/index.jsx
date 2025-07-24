@@ -13,16 +13,16 @@ const RegisterPage = () => {
     escolaridade: '',
     password: ''
   });
+  // Novo estado para a confirmação de senha
+  const [confirmPassword, setConfirmPassword] = useState('');
 
   function handleChange(e) {
     const { name, value } = e.target;
 
     if (name === 'birthday') {
-      // Remove todos os caracteres não numéricos
       const onlyNums = value.replace(/\D/g, '');
       let formattedDate = onlyNums;
 
-      // Adiciona as barras conforme o usuário digita
       if (onlyNums.length > 4) {
         formattedDate = `${onlyNums.slice(0, 2)}/${onlyNums.slice(2, 4)}/${onlyNums.slice(4, 8)}`;
       } else if (onlyNums.length > 2) {
@@ -38,15 +38,18 @@ const RegisterPage = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Cria uma cópia dos dados para envio
+    // --- VERIFICAÇÃO DE SENHA ADICIONADA AQUI ---
+    if (userInfo.password !== confirmPassword) {
+      showNotification("As senhas não coincidem!", 'error');
+      return; // Interrompe o envio do formulário
+    }
+
     const submissionData = { ...userInfo };
 
-    // Reformata a data de DD/MM/AAAA para AAAA-MM-DD para o backend
     if (submissionData.birthday) {
       const parts = submissionData.birthday.split('/');
       if (parts.length === 3) {
         const [day, month, year] = parts;
-        // Validação simples para garantir que as partes são razoáveis
         if (day.length === 2 && month.length === 2 && year.length === 4) {
           submissionData.birthday = `${year}-${month}-${day}`;
         } else {
@@ -71,7 +74,6 @@ const RegisterPage = () => {
 
     } catch (err) {
       console.error("Erro ao registrar: ", err);
-      // Reverte a data para o formato de exibição em caso de erro
       setUserInfo(c => ({ ...c, birthday: userInfo.birthday }));
       showNotification("Erro! Tente novamente.", 'error');
     }
@@ -79,14 +81,14 @@ const RegisterPage = () => {
 
   return (
     <div className="w-full min-h-screen bg-[#1F2A44] flex justify-center items-center p-5 box-border">
-      <div className="w-full max-w-5xl bg-[#F4F7FB] rounded-lg p-10 md:p-12 box-border flex flex-col gap-6">
-        <div className="text-left">
+      <div className="w-full max-w-5xl bg-[#F4F7FB] rounded-lg p-10 md:p-12 box-border flex flex-col items-center gap-6">
+        <div className="text-center">
           <h1 className="text-[#1F2A44] text-4xl md:text-5xl font-bold font-montserrat">Cadastre-se</h1>
           <p className="text-[#A0A0A0] text-base font-light mt-2.5">
             Preencha suas informações abaixo para criar uma conta
           </p>
         </div>
-        <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-8 w-full">
           <div className="flex flex-col gap-5">
             {/* Input de Email */}
             <div className="relative flex items-center bg-[rgba(229,229,230,0.81)] rounded-md w-full">
@@ -135,7 +137,7 @@ const RegisterPage = () => {
               <div className="absolute left-4 pointer-events-none">
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="3" y="11" width="18" height="11" rx="2" ry="2" stroke="#AFAFAF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/><path d="M7 11V7C7 4.23858 9.23858 2 12 2C14.7614 2 17 4.23858 17 7V11" stroke="#AFAFAF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
               </div>
-              <input type="password" placeholder="Confirme sua senha" className="w-full p-5 pl-12 bg-transparent text-lg text-[#1F2A44] rounded-md focus:outline-none focus:ring-2 focus:ring-[#0DACAC] placeholder:text-[#AFAFAF]" required />
+              <input type="password" name="confirmPassword" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} placeholder="Confirme sua senha" className="w-full p-5 pl-12 bg-transparent text-lg text-[#1F2A44] rounded-md focus:outline-none focus:ring-2 focus:ring-[#0DACAC] placeholder:text-[#AFAFAF]" required />
             </div>
           </div>
           <div className="md:col-span-2 flex flex-col items-center gap-4 mt-2">
