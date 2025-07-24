@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useNotification } from '../../context/NotificationContext';
 import MainPopUp from '../../components/MainPopUp';
@@ -14,6 +14,16 @@ import { ChatInput } from '../../components/Chat/ChatInput';
 const ChatPage = () => {
   const navigate = useNavigate();
   const { showNotification } = useNotification();
+
+  // Adicione este bloco para gerenciar a pergunta vinda da ComparePage
+  const [initialMessage, setInitialMessage] = useState('');
+  useEffect(() => {
+    const pendingQuestion = sessionStorage.getItem('juridia-question');
+    if (pendingQuestion) {
+      setInitialMessage(pendingQuestion);
+      sessionStorage.removeItem('juridia-question');
+    }
+  }, []);
   
   const {
     conversations,
@@ -28,7 +38,7 @@ const ChatPage = () => {
     fetchConversations
   } = useConversations();
 
-  const { messages, isLoading, handleSendMessage, setMessages } = useChatHistory(activeConversationId, fetchConversations);
+  const { messages, isLoading, handleSendMessage } = useChatHistory(activeConversationId, fetchConversations);
 
   const activeConversation = useMemo(
     () => conversations.find(c => c.id === activeConversationId),
@@ -65,13 +75,26 @@ const ChatPage = () => {
     <>
       <MainPopUp isOpen={isDeleteModalOpen} onClose={handleCloseDeleteModal}>
         <div className="text-center p-4">
+            <svg className="mx-auto mb-4 w-12 h-12 text-gray-300" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
+                <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 11V6m0 8h.01M19 10a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/>
+            </svg>
             <h3 className="mb-5 text-lg font-normal text-gray-200">
                 Tem certeza que deseja excluir a conversa <br/>
                 <span className="font-medium text-white break-all">"{chatToDelete?.title}"</span>?
             </h3>
             <div className="flex justify-center gap-4">
-                <button onClick={handleCloseDeleteModal} className="px-6 py-2 rounded-lg bg-gray-600 text-white font-semibold hover:bg-gray-500">Cancelar</button>
-                <button onClick={handleConfirmDelete} className="px-6 py-2 rounded-lg bg-red-600 text-white font-semibold hover:bg-red-500">Excluir</button>
+                <button
+                    onClick={handleCloseDeleteModal}
+                    className="px-6 py-2 rounded-lg bg-gray-600 text-white font-semibold hover:bg-gray-500 transition-colors"
+                >
+                    Cancelar
+                </button>
+                <button
+                    onClick={handleConfirmDelete}
+                    className="px-6 py-2 rounded-lg bg-red-600 text-white font-semibold hover:bg-red-500 transition-colors"
+                >
+                    Excluir
+                </button>
             </div>
         </div>
       </MainPopUp>
@@ -91,12 +114,13 @@ const ChatPage = () => {
           
           <MessageList
             messages={messages}
-            isLoading={isLoading && messages.length > 0} // Só mostra loading se já houver mensagens
+            isLoading={isLoading && messages.length > 0}
             showUploader={!activeConversation?.hasPdf}
             onFileUpload={handleFileUpload}
           />
           
           <ChatInput
+            initialMessage={initialMessage} 
             onSendMessage={handleSendMessage}
             disabled={!activeConversation?.hasPdf}
           />

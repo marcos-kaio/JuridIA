@@ -1,7 +1,18 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react'; // Adicione useEffect
 
-export const ChatInput = ({ onSendMessage, disabled }) => {
-  const [content, setContent] = useState('');
+// Receba a nova prop 'initialMessage'
+export const ChatInput = ({ onSendMessage, disabled, initialMessage = '' }) => {
+  // Use a prop para definir o estado inicial do conteúdo
+  const [content, setContent] = useState(initialMessage);
+
+  // Adicione este useEffect para atualizar o input se a prop mudar
+  // (útil se o usuário navegar de volta para a página de comparação e selecionar outro trecho)
+  useEffect(() => {
+    if (initialMessage) {
+      setContent(initialMessage);
+    }
+  }, [initialMessage]);
+
 
   const handleSubmit = () => {
     if (disabled || !content.trim()) return;
