@@ -3,6 +3,7 @@ import { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { checkAuth } from '../../services/authService';
 import { uploadAndSimplifyPdf } from '../../services/chatService';
+import { useNotification } from '../../context/NotificationContext'; // Importe o hook
 
 function LandingPage() {
   const [file, setFile] = useState(null);
@@ -11,8 +12,8 @@ function LandingPage() {
   const [logged, setLogged] = useState(false);
   const navigate = useNavigate();
   const fileInputRef = useRef(null);
+  const { showNotification } = useNotification(); // Use o hook
 
-  // Verifica se o usuário está logado ao carregar a página
   useEffect(() => {
     async function verificarLogin() {
       const { valid } = await checkAuth();
@@ -27,7 +28,6 @@ function LandingPage() {
     window.location.reload();
   }
 
-  // Se estiver logado, encaminha para o chat, caso contrário, para a tela de login
   const handleStart = () => {
     if(logged){
       navigate("/chat");
@@ -50,13 +50,13 @@ function LandingPage() {
 
   const handleSimplify = async () => {
     if (!logged) {
-      alert("Você precisa estar logado para simplificar um documento.");
+      showNotification("Você precisa estar logado para simplificar um documento.", 'error'); // Substitua o alert
       navigate('/login');
       return;
     }
 
     if (!file) {
-      alert('Por favor, selecione um arquivo primeiro.');
+      showNotification('Por favor, selecione um arquivo primeiro.', 'error'); // Substitua o alert
       return;
     }
 
@@ -65,19 +65,19 @@ function LandingPage() {
     formData.append('file', file);
 
     try {
-      // Usa a função do serviço de chat para enviar o arquivo
       await uploadAndSimplifyPdf(formData);
-      // Redireciona para a página de chat após o sucesso
+      showNotification('Documento enviado! Redirecionando para o chat...', 'success');
       navigate('/chat');
     } catch (err) {
       console.error('Erro ao simplificar o arquivo:', err);
-      alert('Ocorreu um erro ao simplificar o arquivo. Tente novamente.');
+      showNotification('Ocorreu um erro ao simplificar o arquivo. Tente novamente.', 'error'); // Substitua o alert
     } finally {
       setLoading(false);
     }
   };
 
   return (
+    // ... (o resto do seu JSX continua o mesmo)
     <>
       <div className="w-full max-w-[1512px] mx-auto text-[#1F2A44] font-poppins bg-[#F4F7FB]">
         {/* ===== HEADER ===== */}

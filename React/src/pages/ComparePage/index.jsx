@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { getDocumentText } from '../../services/documentService';
 
@@ -7,16 +7,46 @@ const ComparePage = () => {
   const navigate = useNavigate();
   const [comparisonPairs, setComparisonPairs] = useState([]);
   const [highlightedIndex, setHighlightedIndex] = useState(null);
-  
-  // Estados para controlar qual parágrafo está selecionado
   const [selectedIndex, setSelectedIndex] = useState(null);
-  const [selectedType, setSelectedType] = useState(null); // 'original' ou 'simplified'
+  const [selectedType, setSelectedType] = useState(null);
+
+  const leftPanelRef = useRef(null);
+  const rightPanelRef = useRef(null);
+  const isSyncing = useRef(false);
+
+  // --- INÍCIO DAS MUDANÇAS ---
+  // Refs para cada parágrafo individual para podermos rolar até eles
+  const leftParagraphRefs = useRef([]);
+  const rightParagraphRefs = useRef([]);
+
+  // Função para garantir que o parágrafo correspondente esteja visível
+  const ensureVisible = (index, targetPanel, targetRefs) => {
+    const targetElement = targetRefs.current[index];
+    if (targetElement) {
+      targetElement.scrollIntoView({
+        behavior: 'smooth',
+        block: 'nearest', // Rola o mínimo necessário para o item ficar visível
+      });
+    }
+  };
+  // --- FIM DAS MUDANÇAS ---
+
+  const handleScroll = useCallback((sourcePanel, targetPanel) => {
+    if (isSyncing.current) return;
+    isSyncing.current = true;
+    const scrollPercentage = sourcePanel.scrollTop / (sourcePanel.scrollHeight - sourcePanel.clientHeight);
+    targetPanel.scrollTop = scrollPercentage * (targetPanel.scrollHeight - targetPanel.clientHeight);
+    setTimeout(() => { isSyncing.current = false; }, 100);
+  }, []);
 
   useEffect(() => {
     const fetchDocument = async () => {
       try {
         const pairs = await getDocumentText(id);
         setComparisonPairs(pairs);
+        // Inicializa os arrays de refs com o tamanho correto
+        leftParagraphRefs.current = new Array(pairs.length);
+        rightParagraphRefs.current = new Array(pairs.length);
       } catch (error) {
         console.error("Failed to fetch document comparison data", error);
       }
@@ -28,13 +58,15 @@ const ComparePage = () => {
 
   const handleMouseOver = (index) => {
     setHighlightedIndex(index);
+    // Ao passar o mouse, também garantimos que o outro lado esteja visível
+    ensureVisible(index, rightPanelRef.current, rightParagraphRefs);
+    ensureVisible(index, leftPanelRef.current, leftParagraphRefs);
   };
 
   const handleMouseOut = () => {
     setHighlightedIndex(null);
   };
   
-  // Função que é chamada ao CLICAR em um parágrafo
   const handleSelectParagraph = (index, type) => {
     if (selectedIndex === index && selectedType === type) {
       setSelectedIndex(null);
@@ -42,18 +74,17 @@ const ComparePage = () => {
     } else {
       setSelectedIndex(index);
       setSelectedType(type);
+      // Ao selecionar, também garantimos que o outro lado esteja visível
+      ensureVisible(index, rightPanelRef.current, rightParagraphRefs);
+      ensureVisible(index, leftPanelRef.current, leftParagraphRefs);
     }
   };
 
-  // Função para navegar para o chat com o texto selecionado
   const handleAskAboutSelection = () => {
     if (selectedIndex === null) return;
-
     const selectedText = comparisonPairs[selectedIndex][selectedType];
     const question = `Poderia me explicar melhor sobre o seguinte trecho: "${selectedText}"`;
-    
     sessionStorage.setItem('juridia-question', question);
-    
     navigate('/chat');
   };
   
@@ -81,10 +112,16 @@ const ComparePage = () => {
           <h2 className="flex-shrink-0 text-2xl font-semibold p-6 pb-4 text-gray-900 border-b">
             Original
           </h2>
-          <div className="overflow-y-auto p-6 space-y-4">
+          <div 
+            ref={leftPanelRef}
+            onScroll={() => handleScroll(leftPanelRef.current, rightPanelRef.current)}
+            className="overflow-y-auto p-6 space-y-4"
+          >
             {comparisonPairs.map((pair, index) => (
               <div key={`original-wrapper-${index}`} className="relative">
                 <p
+                  // Adicionamos a ref a cada parágrafo
+                  ref={el => leftParagraphRefs.current[index] = el}
                   onClick={() => handleSelectParagraph(index, 'original')}
                   className={`transition-all duration-200 rounded-md cursor-pointer p-2 leading-relaxed text-gray-800 
                     ${highlightedIndex === index ? 'bg-cyan-100' : ''}
@@ -110,10 +147,16 @@ const ComparePage = () => {
           <h2 className="flex-shrink-0 text-2xl font-semibold p-6 pb-4 text-gray-900 border-b">
             Simplificado
           </h2>
-          <div className="overflow-y-auto p-6 space-y-4">
+          <div 
+            ref={rightPanelRef}
+            onScroll={() => handleScroll(rightPanelRef.current, leftPanelRef.current)}
+            className="overflow-y-auto p-6 space-y-4"
+          >
             {comparisonPairs.map((pair, index) => (
               <div key={`simplified-wrapper-${index}`} className="relative">
                 <p
+                  // Adicionamos a ref a cada parágrafo
+                  ref={el => rightParagraphRefs.current[index] = el}
                   onClick={() => handleSelectParagraph(index, 'simplified')}
                   className={`transition-all duration-200 rounded-md cursor-pointer p-2 leading-relaxed text-gray-800 
                     ${highlightedIndex === index ? 'bg-cyan-100' : ''}

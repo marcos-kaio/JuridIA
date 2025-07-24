@@ -2,6 +2,7 @@ import { useEffect, useState, useMemo, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { getChats, getChathistory, sendMessage, uploadAndSimplifyPdf, deleteChat, downloadSimplifiedPdf } from '../../services/chatService';
 import ReactMarkdown from "react-markdown";
+import { useNotification } from '../../context/NotificationContext'; // Importe o hook
 
 // Componente do ícone da lixeira
 const TrashIcon = ({...props}) => (
@@ -13,7 +14,6 @@ const TrashIcon = ({...props}) => (
     </svg>
 );
 
-
 const ConversationItem = ({ text, isActive = false, onChangeChat, onDelete }) => (
   <div className={`relative flex items-center justify-between w-full p-4 rounded-lg border-2 group
     ${isActive
@@ -24,9 +24,9 @@ const ConversationItem = ({ text, isActive = false, onChangeChat, onDelete }) =>
     <button onClick={onChangeChat} className="w-full text-left text-lg font-semibold font-montserrat cursor-pointer bg-transparent border-none">
       {text}
     </button>
-    <button
-        onClick={onDelete}
-        className={`absolute right-2 p-1 rounded-full transition-opacity opacity-0 group-hover:opacity-100
+    <button 
+        onClick={onDelete} 
+        className={`absolute right-2 p-1 rounded-full transition-opacity opacity-0 group-hover:opacity-100 
         ${isActive ? 'text-white hover:bg-white/20' : 'text-red-500 hover:bg-red-100'}`}
         aria-label="Deletar conversa"
     >
@@ -89,6 +89,7 @@ const ChatPage = () => {
   const [isSimplifying, setIsSimplifying] = useState(false);
   const chatContainerRef = useRef(null);
   const navigate = useNavigate();
+  const { showNotification } = useNotification(); // Use o hook
 
   const [conversations, setConversations] = useState([]);
 
@@ -111,11 +112,11 @@ const ChatPage = () => {
           hasPdf: chat.status === "done",
           updatedAt: chat.updatedAt,
         }));
-
+        
         parsedChats.sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt));
 
         setConversations(parsedChats);
-
+        
         if (parsedChats.length > 0 && !conversations.some(c => c.id === activeConversationId)) {
           setActiveConversationId(parsedChats[0].id);
         }
@@ -146,7 +147,7 @@ const ChatPage = () => {
   useEffect(() => {
       fetchHistory();
   }, [activeConversationId]);
-
+  
   const handleNewChat = () => {
     const existingNewChat = conversations.find(c => c.id.toString().startsWith('new-chat-'));
     if (existingNewChat) {
@@ -161,7 +162,7 @@ const ChatPage = () => {
       hasPdf: false,
       updatedAt: new Date().toISOString()
     };
-
+    
     setConversations(c => [newConversation, ...c]);
     setActiveConversationId(newChatId);
     setMessages([]);
@@ -207,7 +208,7 @@ const ChatPage = () => {
     if (window.confirm(`Tem certeza que deseja excluir a ${conversations.find(c => c.id === idToDelete)?.title}?`)) {
         try {
             await deleteChat(idToDelete);
-
+            
             const updatedConversations = conversations.filter(c => c.id !== idToDelete);
             setConversations(updatedConversations);
 
@@ -219,9 +220,10 @@ const ChatPage = () => {
                     setMessages([]);
                 }
             }
+            showNotification('Conversa deletada com sucesso!', 'success');
         } catch (error) {
             console.error("Erro ao deletar a conversa:", error);
-            alert("Não foi possível deletar a conversa.");
+            showNotification("Não foi possível deletar a conversa.", 'error'); // Substitua o alert
         }
     }
   }
@@ -250,15 +252,15 @@ const ChatPage = () => {
     const formData = new FormData();
     formData.append('file', file);
     setIsSimplifying(true);
-
+  
     try {
       const resp = await uploadAndSimplifyPdf(formData);
-
+      
       const newConvoIdHeader = resp.headers['x-document-id'];
       if (!newConvoIdHeader) {
           throw new Error("ID do novo documento não foi retornado pelo servidor.");
       }
-
+      
       const newConvoId = parseInt(newConvoIdHeader, 10);
       if (isNaN(newConvoId)) {
         throw new Error("ID retornado pelo servidor é inválido.");
@@ -267,17 +269,19 @@ const ChatPage = () => {
       const newConversation = {
         id: newConvoId,
         title: `Conversa ${newConvoId}`,
-        hasPdf: true,
+        hasPdf: true, 
         updatedAt: new Date().toISOString()
       };
-
+      
+      showNotification('Documento simplificado com sucesso!', 'success');
       setConversations(prev => [newConversation, ...prev.filter(c => !c.id.toString().startsWith('new-chat-'))]);
       setActiveConversationId(newConvoId);
       setMessages([]);
-
+  
     } catch (error) {
       console.error("Erro ao simplificar o PDF:", error);
-      alert(`Ocorreu um erro ao simplificar o arquivo: ${error.message}`);
+      const errorMessage = error.response?.data?.error || `Ocorreu um erro ao simplificar o arquivo.`;
+      showNotification(errorMessage, 'error'); // Substitua o alert
     } finally {
       setFile(null);
       setFileName('Nenhum arquivo selecionado');
@@ -302,15 +306,16 @@ const ChatPage = () => {
         }
     } catch (error) {
         console.error("Falha ao processar o arquivo para download/visualização.", error);
-        alert("Não foi possível obter o arquivo.");
+        showNotification("Não foi possível obter o arquivo.", 'error'); // Substitua o alert
     }
   };
-
+  
   const handleCompare = (docId) => {
     navigate(`/compare/${docId}`);
   };
 
   return (
+    // ... (o resto do seu JSX continua o mesmo)
     <div className="w-screen h-screen bg-[#1F2A44] flex overflow-hidden">
       <aside className="hidden md:flex flex-col flex-shrink-0 w-[260px] bg-[#1F2A44] p-5 gap-5 border-r border-[#323f58]">
         <div className="flex flex-col items-center gap-4">
@@ -322,7 +327,6 @@ const ChatPage = () => {
             <span>Nova conversa</span>
           </button>
         </div>
-
         <div className="flex-grow flex flex-col gap-2.5 overflow-y-auto">
           {conversations.map((convo) => (
             <ConversationItem
@@ -334,12 +338,10 @@ const ChatPage = () => {
             />
           ))}
         </div>
-
         <div className="mt-auto pl-2.5">
           <svg  onClick={handleLeave} className='cursor-pointer' width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M16 17L21 12M21 12L16 7M21 12H9M9 22H7C5.89543 22 5 21.1046 5 20V4C5 2.89543 5.89543 2 7 2H9" stroke="#0DACAC" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
         </div>
       </aside>
-
       <main className="flex-grow bg-[#F4F7FB] rounded-lg my-5 mr-5 md:my-5 md:mr-5 md:ml-0 flex flex-col overflow-hidden border-2 border-[#007B9E]">
         <header className="p-4 px-6 flex items-center justify-between gap-4 border-b border-[#007B9E]">
             <div className='flex items-center gap-4'>
@@ -367,10 +369,7 @@ const ChatPage = () => {
                 </div>
             )}
         </header>
-
-
         <div ref={chatContainerRef} className="flex-grow p-7 overflow-y-auto flex flex-col gap-5">
-
           {activeConversation && !activeConversation.hasPdf && (
             <SendPdf
                 file={fileName}
@@ -379,18 +378,15 @@ const ChatPage = () => {
                 isLoading={isSimplifying}
             />
           )}
-
           {messages.map((msg, index) => {
             const messageKey = msg.id || msg.tempId || `${msg.role}-${index}`;
-
+            
             return msg.role === 'user'
               ? <UserMessage key={messageKey} userContent={msg.content} />
               : <BotMessage key={messageKey} botContent={msg.content} />
-
+            
           })}
-
         </div>
-
         <footer className="p-5 px-7 bg-[#F4F7FB]">
           <div className="flex items-center bg-white border border-[#007B9E] rounded-2xl p-1 pr-2 pl-5">
             {activeConversation && activeConversation.hasPdf ? (
