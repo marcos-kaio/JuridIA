@@ -3,16 +3,58 @@ import { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { checkAuth } from '../../services/authService';
 import { uploadAndSimplifyPdf } from '../../services/chatService';
-import { useNotification } from '../../context/NotificationContext'; // Importe o hook
+import { useNotification } from '../../context/NotificationContext';
 
 function LandingPage() {
   const [file, setFile] = useState(null);
   const [fileName, setFileName] = useState('Clique para anexar ou arraste seu arquivo');
   const [loading, setLoading] = useState(false);
   const [logged, setLogged] = useState(false);
+  const [activeSection, setActiveSection] = useState('home');
   const navigate = useNavigate();
   const fileInputRef = useRef(null);
-  const { showNotification } = useNotification(); // Use o hook
+  const { showNotification } = useNotification();
+
+  // Refs para cada seção que queremos observar
+  const sectionRefs = {
+    home: useRef(null),
+    'how-it-works': useRef(null),
+    about: useRef(null),
+    faq: useRef(null),
+  };
+
+  useEffect(() => {
+    // Lógica do Intersection Observer para destacar o link ativo
+    const observerCallback = (entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          setActiveSection(entry.target.id);
+        }
+      });
+    };
+
+    const observer = new IntersectionObserver(observerCallback, {
+      root: null, // Observa em relação ao viewport
+      rootMargin: '0px',
+      threshold: 0.4, // Ativa quando 40% da seção está visível
+    });
+
+    // Anexa o observer a cada uma das seções
+    Object.values(sectionRefs).forEach((ref) => {
+      if (ref.current) {
+        observer.observe(ref.current);
+      }
+    });
+
+    // Limpeza ao desmontar o componente
+    return () => {
+      Object.values(sectionRefs).forEach((ref) => {
+        if (ref.current) {
+          observer.unobserve(ref.current);
+        }
+      });
+    };
+  }, []); // Executa apenas uma vez
 
   useEffect(() => {
     async function verificarLogin() {
@@ -50,13 +92,13 @@ function LandingPage() {
 
   const handleSimplify = async () => {
     if (!logged) {
-      showNotification("Você precisa estar logado para simplificar um documento.", 'error'); // Substitua o alert
+      showNotification("Você precisa estar logado para simplificar um documento.", 'error');
       navigate('/login');
       return;
     }
 
     if (!file) {
-      showNotification('Por favor, selecione um arquivo primeiro.', 'error'); // Substitua o alert
+      showNotification('Por favor, selecione um arquivo primeiro.', 'error');
       return;
     }
 
@@ -70,25 +112,32 @@ function LandingPage() {
       navigate('/chat');
     } catch (err) {
       console.error('Erro ao simplificar o arquivo:', err);
-      showNotification('Ocorreu um erro ao simplificar o arquivo. Tente novamente.', 'error'); // Substitua o alert
+      showNotification('Ocorreu um erro ao simplificar o arquivo. Tente novamente.', 'error');
     } finally {
       setLoading(false);
     }
   };
 
+  // Função para gerar as classes do link de navegação dinamicamente
+  const navLinkClass = (sectionId) =>
+    `text-xl font-semibold no-underline py-2.5 transition-colors ${
+      activeSection === sectionId
+        ? 'text-[#0DACAC] underline'
+        : 'text-[#1F2A44]'
+    }`;
+
   return (
-    // ... (o resto do seu JSX continua o mesmo)
     <>
       <div className="w-full max-w-[1512px] mx-auto text-[#1F2A44] font-poppins bg-[#F4F7FB]">
         {/* ===== HEADER ===== */}
-        <header className="relative flex items-center justify-between h-32 px-20">
+        <header className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between h-32 px-20 bg-[#F4F7FB] shadow-md">
           <div className="absolute bottom-0 left-20 right-20 h-0.5 bg-[#007B9E]"></div>
           <img className="w-[290px] h-[79px]" src={JuridiaLogo} alt="Logo da JuridIA" />
           <nav className="flex gap-10">
-            <a href="#" className="text-xl font-semibold text-[#0DACAC] no-underline py-2.5 underline">Home</a>
-            <a href="#" className="text-xl font-semibold text-[#1F2A44] no-underline py-2.5">Como funciona</a>
-            <a href="#" className="text-xl font-semibold text-[#1F2A44] no-underline py-2.5">Sobre</a>
-            <a href="#" className="text-xl font-semibold text-[#1F2A44] no-underline py-2.5">FAQ</a>
+            <a href="#home" className={navLinkClass('home')}>Home</a>
+            <a href="#how-it-works" className={navLinkClass('how-it-works')}>Como funciona</a>
+            <a href="#about" className={navLinkClass('about')}>Sobre</a>
+            <a href="#faq" className={navLinkClass('faq')}>FAQ</a>
           </nav>
           {
             logged ?
@@ -100,12 +149,11 @@ function LandingPage() {
               <Link to="/register" className="font-bold text-xl rounded-md cursor-pointer no-underline bg-[#F4F7FB] text-[#1F2A44] border border-[#1F2A44] py-3 px-6">Cadastre-se</Link>
             </div>)
           }
-
         </header>
 
-        <main>
+        <main className="pt-32">
           {/* ===== HERO SECTION ===== */}
-          <section className="flex justify-center text-center py-20 px-10">
+          <section ref={sectionRefs.home} id="home" className="flex justify-center text-center py-20 px-10">
             <div className="max-w-[705px]">
               <h1 className="text-5xl font-bold leading-tight mb-4">Entenda seus contratos de verdade com o poder da <span className="text-[#0DACAC]">IA</span></h1>
               <p className="font-montserrat text-xl leading-relaxed mb-8">
@@ -121,31 +169,18 @@ function LandingPage() {
             <h2 className="text-5xl font-bold leading-tight text-[#1F2A44] mb-6">Simplifique seu contrato</h2>
             <p className="font-montserrat text-xl leading-relaxed max-w-[605px] mb-10">Faça o upload do seu contrato em formato pdf ou .txt e nossa Inteligência Artificial irá fornecer uma explicação clara e concisa dos termos mais importantes.</p>
             <div className="w-full max-w-5xl bg-[#EBEBEB] shadow-sm rounded-[50px] p-6">
-              <input
-                type="file"
-                ref={fileInputRef}
-                onChange={handleFileChange}
-                accept="application/pdf,.txt"
-                className="hidden"
-              />
-              <div
-                className="h-[186px] bg-[rgba(226,232,240,0.24)] shadow-inner rounded-[37px] flex items-center justify-center border-2 border-dashed border-[#b0b0b0] mb-6 cursor-pointer text-black text-4xl"
-                onClick={handleAreaClick}
-              >
+              <input type="file" ref={fileInputRef} onChange={handleFileChange} accept="application/pdf,.txt" className="hidden"/>
+              <div className="h-[186px] bg-[rgba(226,232,240,0.24)] shadow-inner rounded-[37px] flex items-center justify-center border-2 border-dashed border-[#b0b0b0] mb-6 cursor-pointer text-black text-4xl" onClick={handleAreaClick}>
                 <p>{fileName}</p>
               </div>
-              <button
-                className="w-full h-[67px] bg-[#F4F7FB] shadow-md rounded-[37px] border-none text-[#1F2A44] text-4xl font-bold cursor-pointer disabled:bg-gray-400 disabled:cursor-not-allowed"
-                onClick={handleSimplify}
-                disabled={loading || !file}
-              >
+              <button className="w-full h-[67px] bg-[#F4F7FB] shadow-md rounded-[37px] border-none text-[#1F2A44] text-4xl font-bold cursor-pointer disabled:bg-gray-400 disabled:cursor-not-allowed" onClick={handleSimplify} disabled={loading || !file}>
                 {loading ? 'Simplificando...' : 'Simplificar contrato'}
               </button>
             </div>
           </section>
 
           {/* ===== HOW IT WORKS SECTION ===== */}
-          <section className="flex flex-col items-center text-center py-20 px-10">
+          <section ref={sectionRefs['how-it-works']} id="how-it-works" className="flex flex-col items-center text-center py-20 px-10 scroll-mt-32">
             <h2 className="text-5xl font-bold leading-tight text-[#1F2A44] mb-6">Como funciona?</h2>
             <div className="flex justify-center gap-8 flex-wrap w-full">
               <div className="w-[410px] bg-[#1F2A44] shadow-md rounded-[50px] p-12 text-[#F4F7FB]">
@@ -164,7 +199,7 @@ function LandingPage() {
           </section>
 
           {/* ===== ABOUT SECTION ===== */}
-          <section className="bg-white flex flex-col items-center text-center py-20 px-10">
+          <section ref={sectionRefs.about} id="about" className="bg-white flex flex-col items-center text-center py-20 px-10 scroll-mt-32">
             <h2 className="text-5xl font-bold leading-tight text-[#1F2A44] mb-6">Sobre a JuridIA</h2>
             <p className="text-3xl leading-relaxed max-w-6xl">
               Na JuridIA, acreditamos que todos têm o direito de entender completamente os documentos que assinam. Nossa missão é quebrar as barreiras do <span className="text-[#0DACAC]">"juridiquês"</span>, utilizando o poder da Inteligência Artificial para tornar contratos e termos legais acessíveis a todos.<br/>Combinamos tecnologia de ponta com um compromisso com a clareza e a simplicidade, para que você possa tomar decisões informadas com confiança.
@@ -172,7 +207,7 @@ function LandingPage() {
           </section>
 
           {/* ===== FAQ SECTION ===== */}
-          <section className="flex flex-col items-center text-center py-20 px-10">
+          <section ref={sectionRefs.faq} id="faq" className="flex flex-col items-center text-center py-20 px-10 scroll-mt-32">
             <h2 className="text-5xl font-bold leading-tight text-[#1F2A44] mb-6">Perguntas Frequentes</h2>
             <div className="flex flex-col gap-5 w-full max-w-4xl mt-10">
               <div className="bg-[#0DACAC] shadow-inner rounded-3xl p-8 text-white text-3xl font-semibold text-left cursor-pointer">A JuridIA é segura para usar com meus contratos?</div>
