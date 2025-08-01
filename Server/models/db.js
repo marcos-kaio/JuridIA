@@ -7,15 +7,30 @@ import defineChat from "./Chat.js";
 
 dotenv.config();
 
-export const sequelize = new Sequelize(
-  "juridiaTest", // nome do banco de dados
-  process.env.DB_USERNAME || "root", // nome do usuário do mysql
-  process.env.DB_PASSWORD || "", // senha do banco de dados mysql
-  {
-    host: "localhost",
-    dialect: "mysql",
-  }
-);
+// Verifica se uma DATABASE_URL existe (ambiente de produção da Render)
+// Se não, usa as configurações locais.
+export const sequelize = process.env.DATABASE_URL ?
+  // Configuração para Produção (Render com PlanetScale/Aiven)
+  new Sequelize(process.env.DATABASE_URL, {
+    dialect: 'mysql',
+    protocol: 'mysql',
+    dialectOptions: {
+      ssl: {
+        require: true,
+        rejectUnauthorized: true, // Garante que a conexão seja segura
+      }
+    }
+  }) :
+  // Configuração para Desenvolvimento Local
+  new Sequelize(
+    "juridiaTest",
+    process.env.DB_USERNAME || "root",
+    process.env.DB_PASSWORD || "",
+    {
+      host: "localhost",
+      dialect: "mysql",
+    }
+  );
 
 // teste de autenticação
 sequelize
