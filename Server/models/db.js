@@ -7,32 +7,27 @@ import defineChat from "./Chat.js";
 
 dotenv.config();
 
-// Verifica se uma DATABASE_URL existe (ambiente de produção da Render)
-// Se não, usa as configurações locais.
-export const sequelize = process.env.DATABASE_URL ?
-  // Configuração para Produção (Render com PlanetScale/Aiven)
-  new Sequelize(process.env.DATABASE_URL, {
+// Usa as variáveis de ambiente separadas, que serão configuradas na Render.
+// O 'dialectOptions' é crucial para a conexão segura com a PlanetScale.
+export const sequelize = new Sequelize(
+  process.env.DB_DATABASE || "juridiaTest",       // Nome do banco de dados
+  process.env.DB_USERNAME || "root",              // Usuário
+  process.env.DB_PASSWORD || "",                  // Senha
+  {
+    host: process.env.DB_HOST || "localhost",     // Host do banco de dados
     dialect: 'mysql',
-    protocol: 'mysql',
     dialectOptions: {
       ssl: {
         require: true,
-        rejectUnauthorized: true, // Garante que a conexão seja segura
+        // PlanetScale não requer a rejeição de certificados não autorizados
+        rejectUnauthorized: false
       }
     }
-  }) :
-  // Configuração para Desenvolvimento Local
-  new Sequelize(
-    "juridiaTest",
-    process.env.DB_USERNAME || "root",
-    process.env.DB_PASSWORD || "",
-    {
-      host: "localhost",
-      dialect: "mysql",
-    }
-  );
+  }
+);
 
-// teste de autenticação
+
+// O restante do arquivo permanece igual
 sequelize
   .authenticate()
   .then(() => {
@@ -42,12 +37,10 @@ sequelize
     console.log("Erro ao se conectar com o banco de dados: ", error);
   });
 
-// exportando tabelas definidas no sequelize
 export const User = defineUser(sequelize);
 export const Document = defineDocument(sequelize);
 export const Chat = defineChat(sequelize);
 
-// definindo associações
 User.hasMany(Document, { foreignKey: "user_id" });
 Document.belongsTo(User, { foreignKey: "user_id" });
 
