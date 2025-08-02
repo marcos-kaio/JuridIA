@@ -5,7 +5,7 @@ const api = axios.create({
   withCredentials: false,
 });
 
-// garante que o token estará sendo passado para autenticação
+// Interceptor para adicionar o token em cada requisição
 api.interceptors.request.use(config => {
   const token = localStorage.getItem('user_token');
   if (token) {
@@ -13,5 +13,20 @@ api.interceptors.request.use(config => {
   }
   return config;
 });
+
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response && error.response.status === 401) {
+      localStorage.removeItem('user_token');
+      localStorage.removeItem('user_name');
+      
+      if (window.location.pathname !== '/login') {
+        window.location.href = '/login';
+      }
+    }
+    return Promise.reject(error);
+  }
+);
 
 export default api;
