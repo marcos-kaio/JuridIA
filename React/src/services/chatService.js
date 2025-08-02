@@ -3,7 +3,7 @@ import api from "./api.js";
 export const getChats = async () => {
   try {
     // Adiciona headers para evitar o cache da requisição
-    const chats = await api.get("http://localhost:8081/chat/find", {
+    const chats = await api.get("/chat/find", {
       headers: {
         'Cache-Control': 'no-cache',
         'Pragma': 'no-cache',

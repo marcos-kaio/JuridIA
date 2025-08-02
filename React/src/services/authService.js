@@ -2,7 +2,7 @@ import api from "./api.js";
 
 export async function register({username, email, birthday, escolaridade, password}) {
   try {
-    const resp = await api.post("http://localhost:8081/user/register", {
+    const resp = await api.post("/user/register", {
       username, email, birthday, escolaridade, password
     });
 
