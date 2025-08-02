@@ -1,5 +1,6 @@
 import dotenv from "dotenv";
 import { Sequelize } from "sequelize";
+import pg from 'pg'; // Importe o pg
 
 import defineUser from "./User.js";
 import defineDocument from "./Document.js";
@@ -7,27 +8,31 @@ import defineChat from "./Chat.js";
 
 dotenv.config();
 
-// Usa as variáveis de ambiente separadas, que serão configuradas na Render.
-// O 'dialectOptions' é crucial para a conexão segura com a PlanetScale.
-export const sequelize = new Sequelize(
-  process.env.DB_DATABASE || "juridiaTest",       // Nome do banco de dados
-  process.env.DB_USERNAME || "root",              // Usuário
-  process.env.DB_PASSWORD || "",                  // Senha
-  {
-    host: process.env.DB_HOST || "localhost",     // Host do banco de dados
-    dialect: 'mysql',
+export const sequelize = process.env.DATABASE_URL ?
+  // Configuração para Produção (Render com PostgreSQL)
+  new Sequelize(process.env.DATABASE_URL, {
+    dialectModule: pg, // Usa o driver pg
+    dialect: 'postgres',
+    protocol: 'postgres',
     dialectOptions: {
       ssl: {
         require: true,
-        // PlanetScale não requer a rejeição de certificados não autorizados
-        rejectUnauthorized: false
+        rejectUnauthorized: false // Necessário para a conexão na Render
       }
     }
-  }
-);
+  }) :
+  // Configuração para Desenvolvimento Local (MySQL)
+  new Sequelize(
+    "juridiaTest",
+    process.env.DB_USERNAME || "root",
+    process.env.DB_PASSWORD || "",
+    {
+      host: "localhost",
+      dialect: "mysql",
+    }
+  );
 
-
-// O restante do arquivo permanece igual
+// O restante do arquivo permanece igual...
 sequelize
   .authenticate()
   .then(() => {
