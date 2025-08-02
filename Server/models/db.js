@@ -1,6 +1,6 @@
 import dotenv from "dotenv";
 import { Sequelize } from "sequelize";
-import pg from 'pg'; // Importe o pg
+import pg from 'pg';
 
 import defineUser from "./User.js";
 import defineDocument from "./Document.js";
@@ -9,19 +9,17 @@ import defineChat from "./Chat.js";
 dotenv.config();
 
 export const sequelize = process.env.DATABASE_URL ?
-  // Configuração para Produção (Render com PostgreSQL)
   new Sequelize(process.env.DATABASE_URL, {
-    dialectModule: pg, // Usa o driver pg
+    dialectModule: pg,
     dialect: 'postgres',
     protocol: 'postgres',
     dialectOptions: {
       ssl: {
         require: true,
-        rejectUnauthorized: false // Necessário para a conexão na Render
+        rejectUnauthorized: false
       }
     }
   }) :
-  // Configuração para Desenvolvimento Local (MySQL)
   new Sequelize(
     "juridiaTest",
     process.env.DB_USERNAME || "root",
@@ -32,7 +30,6 @@ export const sequelize = process.env.DATABASE_URL ?
     }
   );
 
-// O restante do arquivo permanece igual...
 sequelize
   .authenticate()
   .then(() => {
