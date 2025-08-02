@@ -8,19 +8,20 @@ import { requireAuth } from "./middlewares/auth.js";
 const app = express();
 app.use(express.json());
 
-// Configura o CORS para expor o cabeçalho personalizado
-app.use(cors({
+// Permite que a origem das requisições seja definida por uma variável de ambiente.
+const corsOptions = {
+  origin: process.env.CORS_ORIGIN || "http://localhost:3000",
   exposedHeaders: ['X-Document-Id'],
-}));
+};
+app.use(cors(corsOptions));
 
-const port = 8081;
+
+// Usa a porta fornecida pelo ambiente de produção (Render) ou a 8081 para desenvolvimento.
+const port = process.env.PORT || 8081;
 
 app.use('/document', requireAuth, documentRoutes);
 app.use('/user', userRoutes);
 app.use('/chat', requireAuth, chatRoutes);
-
-// ordem da estrutura de envio de requisição para cadastro de usuário:
-// { username, email, birthday, escolaridade, password }
 
 app.listen(port, () => {
   console.log(`Running on port ${port}`);

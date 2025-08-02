@@ -1,33 +1,29 @@
 {
-  "name": "juridia",
+  "name": "server",
   "version": "1.0.0",
-  "description": "",
   "main": "index.js",
+  "type": "module",
   "scripts": {
-    "install:react": "cd React && npm i",
-    "install:server": "cd Server && npm i",
-    "install:all": "npm run install:react && npm run install:server",
-    "start:react": "cd React && npm run dev",
-    "start:server": "cd Server && npm start",
-    "start": "concurrently --raw \"FRONTEND,SERVER\" -c \"bgBlue.bold,bgGreen.bold\" \"npm run start:react\" \"npm run start:server\"",
-    "test": "node --test test/",
-    "test:watch": "node --watch --test test/"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node index.js"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://marcos-kaio@github.com/marcos-kaio/JuridIA.git"
-  },
-  "keywords": [],
   "author": "",
   "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/marcos-kaio/JuridIA/issues"
-  },
-  "homepage": "https://github.com/marcos-kaio/JuridIA#readme",
-  "devDependencies": {
-    "concurrently": "^9.1.2"
-  },
+  "description": "",
   "dependencies": {
-    "juridia": "file:"
+    "@google/generative-ai": "^0.15.0",
+    "bcrypt": "^6.0.0",
+    "cors": "^2.8.5",
+    "dotenv": "^16.5.0",
+    "express": "^5.1.0",
+    "html-pdf": "^3.0.1",
+    "jsonwebtoken": "^9.0.2",
+    "marked": "^15.0.12",
+    "multer": "^2.0.1",
+    "mysql2": "^3.14.1",
+    "nodemon": "^3.1.10",
+    "pdf-parse": "^1.1.1",
+    "sequelize": "^6.37.7",
+    "server": "file:"
   }
 }
