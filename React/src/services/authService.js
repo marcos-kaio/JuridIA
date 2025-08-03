@@ -2,7 +2,7 @@ import api from "./api.js";
 
 export async function register({username, email, birthday, escolaridade, password}) {
   try {
-    const resp = await api.post("http://localhost:8081/user/register", {
+    const resp = await api.post("/user/register", {
       username, email, birthday, escolaridade, password
     });
 
@@ -16,7 +16,7 @@ export async function register({username, email, birthday, escolaridade, passwor
 
 export async function login({ email, password }) {
   try {
-    const resp = await api.post("http://localhost:8081/user/login", {
+    const resp = await api.post("/user/login", {
       email,
       password,
     });
@@ -38,7 +38,7 @@ export async function login({ email, password }) {
 // verifica se token é válido
 export async function checkAuth() {
   try {
-    const resp = await api.get("http://localhost:8081/user/me");
+    const resp = await api.get("/user/me");
     return { valid: true, user: resp.data };
   } catch(err) {
     return { valid: false };
