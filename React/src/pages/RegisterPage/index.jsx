@@ -112,12 +112,12 @@ const RegisterPage = () => {
             </div>
           </div>
           <div className="flex flex-col gap-5">
-            {/* Input de Escolaridade */}
+            {/* Input de Escolaridade (CORRIGIDO) */}
             <div className="relative flex items-center bg-[rgba(229,229,230,0.81)] rounded-md w-full">
               <div className="absolute left-4 pointer-events-none">
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M2 3H7C8.10457 3 9 3.89543 9 5V21C9 19.8954 8.10457 19 7 19H2V3Z" stroke="#AFAFAF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/><path d="M22 3H17C15.8954 3 15 3.89543 15 5V21C15 19.8954 15.8954 19 17 19H22V3Z" stroke="#AFAFAF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
               </div>
-              <select name='escolaridade' value={userInfo.escolaridade} onChange={handleChange} className="w-full p-5 pl-12 bg-transparent text-lg text-[#AFAFAF] rounded-md focus:outline-none focus:ring-2 focus:ring-[#0DACAC] appearance-none cursor-pointer invalid:text-[#AFAFAF] focus:text-[#1F2A44]" defaultValue="" required>
+              <select name='escolaridade' value={userInfo.escolaridade} onChange={handleChange} className="w-full p-5 pl-12 bg-transparent text-lg text-[#AFAFAF] rounded-md focus:outline-none focus:ring-2 focus:ring-[#0DACAC] appearance-none cursor-pointer invalid:text-[#AFAFAF] focus:text-[#1F2A44]" required>
                 <option value="" disabled>Escolaridade</option>
                 <option value="fundamental">Ensino Fundamental</option>
                 <option value="medio">Ensino Médio</option>
