@@ -27,6 +27,23 @@ export const ChatHeader = ({ activeConversation }) => {
     }
   };
 
+  const handlePrint = async (docId) => {
+    try {
+      const blob = await downloadSimplifiedPdf(docId);
+      const url = URL.createObjectURL(blob);
+      const newWindow = window.open(url, '_blank');
+      if (newWindow) {
+        newWindow.onload = () => {
+          newWindow.print();
+        };
+      } else {
+        showNotification("O bloqueador de pop-ups pode estar impedindo a impressão.", 'info');
+      }
+    } catch (error) {
+      showNotification("Não foi possível obter o arquivo para impressão.", 'error');
+    }
+  };
+
   const handleCompare = (docId) => {
     navigate(`/compare/${docId}`);
   };
@@ -52,6 +69,9 @@ export const ChatHeader = ({ activeConversation }) => {
           </button>
           <button onClick={() => handleCompare(activeConversation.id)} className="bg-[#0DACAC] text-white px-3 py-1.5 rounded-md hover:bg-[#089a9a] transition-colors text-sm font-semibold">
             Comparar
+          </button>
+          <button onClick={() => handlePrint(activeConversation.id)} className="bg-[#0DACAC] text-white px-3 py-1.5 rounded-md hover:bg-[#089a9a] transition-colors text-sm font-semibold">
+            Imprimir
           </button>
         </div>
       )}

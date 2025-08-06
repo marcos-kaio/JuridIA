@@ -20,16 +20,20 @@ export const useConversations = () => {
           updatedAt: chat.updatedAt,
         }));
         setConversations(parsedChats);
-        // Define a primeira conversa como ativa se nenhuma estiver
-        if (parsedChats.length > 0 && !activeConversationId) {
-          setActiveConversationId(parsedChats[0].id);
-        }
+        
+        // Define a primeira conversa como ativa se nenhuma estiver, sem causar loop
+        setActiveConversationId(currentId => {
+          if (parsedChats.length > 0 && !currentId) {
+            return parsedChats[0].id;
+          }
+          return currentId;
+        });
       }
     } catch (error) {
       console.error("Erro ao buscar conversas:", error);
       showNotification("Não foi possível carregar as conversas.", 'error');
     }
-  }, [activeConversationId, showNotification]);
+  }, [showNotification]);
 
   useEffect(() => {
     fetchConversations();

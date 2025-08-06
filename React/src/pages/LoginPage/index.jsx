@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { checkAuth, login } from "../../services/authService.js";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom"; // Importe o Link
 import { useNotification } from "../../context/NotificationContext.jsx";
 import JuridiaLogo from '../../assets/juridia_logo_texto_branco.png'; 
 
@@ -22,7 +22,7 @@ const LoginPage = () => {
         navigate("/", { replace: true });
       }
     })();
-  }, []);
+  }, [navigate]);
 
   function handleChange(e) {
     setCredenciais(c => ({ ...c, [e.target.name]: e.target.value }))
@@ -61,11 +61,11 @@ const LoginPage = () => {
           </div>
           <input type="password" name="password" onChange={handleChange} placeholder="Digite sua senha" className="w-full py-5 px-12 text-lg bg-[rgba(229,229,230,0.81)] border border-gray-300 rounded-md focus:outline-none focus:border-[#0DACAC]" />
         </div>
-        <a href="#" className="w-full max-w-[430px] text-right text-[#1F2A44] text-base underline">Esqueci a senha</a>
+        <Link to="/forgot-password" className="w-full max-w-[430px] text-right text-[#1F2A44] text-base underline">Esqueci a senha</Link>
         <button type="submit" className="w-full max-w-[430px] p-5 bg-[#0DACAC] text-white text-3xl font-medium rounded-2xl cursor-pointer hover:bg-[#089a9a] transition-colors">Login</button>
         <div className="text-center text-base">
           <span className="text-[#1f2a44]">Não tem uma conta? </span>
-          <a href="/register" className="text-[#007B9E] no-underline">Cadastre-se</a>
+          <Link to="/register" className="text-[#007B9E] no-underline">Cadastre-se</Link>
         </div>
       </form>
     </div>

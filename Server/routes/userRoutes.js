@@ -78,9 +78,44 @@ router.post("/login", async (req, res) => {
   });
 });
 
-// -- inclusão de atualização de informações de user --
+// -- Rotas para Recuperação de Senha --
 
-// -- inclusão de deleção de user --
+// 1. Verifica se o e-mail existe
+router.post("/forgot-password/verify-email", async (req, res) => {
+    const { email } = req.body;
+    if (!email) return res.status(400).json({ error: "O e-mail é obrigatório." });
+
+    const user = await User.findOne({ where: { email } });
+    if (!user) return res.status(404).json({ error: "E-mail não encontrado." });
+    
+    res.status(200).json({ message: "E-mail verificado com sucesso." });
+});
+
+// 2. Verifica e-mail e data de nascimento
+router.post("/forgot-password/verify-user", async (req, res) => {
+    const { email, birthday } = req.body;
+    if (!email || !birthday) return res.status(400).json({ error: "E-mail e data de nascimento são obrigatórios." });
+
+    const user = await User.findOne({ where: { email, birthday } });
+    if (!user) return res.status(401).json({ error: "Dados de verificação inválidos." });
+
+    res.status(200).json({ message: "Usuário verificado com sucesso." });
+});
+
+// 3. Redefine a senha
+router.post("/forgot-password/reset", async (req, res) => {
+    const { email, password } = req.body;
+    if (!email || !password) return res.status(400).json({ error: "E-mail e nova senha são obrigatórios." });
+
+    const user = await User.findOne({ where: { email } });
+    if (!user) return res.status(404).json({ error: "Usuário não encontrado." });
+
+    const passwordHash = await bcrypt.hash(password, saltRounds);
+    await user.update({ password: passwordHash });
+
+    res.status(200).json({ message: "Senha redefinida com sucesso!" });
+});
+
 
 // verifica se token é válido
 router.get("/me", requireAuth, (req, res) => {

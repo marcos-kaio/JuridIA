@@ -44,3 +44,34 @@ export async function checkAuth() {
     return { valid: false };
   }
 }
+
+// Funções para Recuperação de Senha
+export async function verifyEmailForPasswordReset(email) {
+    try {
+        const resp = await api.post("/user/forgot-password/verify-email", { email });
+        return resp.data;
+    } catch (err) {
+        const message = err.response?.data?.error || "Falha ao verificar o e-mail.";
+        throw new Error(message);
+    }
+}
+
+export async function verifyUserForPasswordReset(email, birthday) {
+    try {
+        const resp = await api.post("/user/forgot-password/verify-user", { email, birthday });
+        return resp.data;
+    } catch (err) {
+        const message = err.response?.data?.error || "Data de nascimento incorreta.";
+        throw new Error(message);
+    }
+}
+
+export async function resetPassword(email, password) {
+    try {
+        const resp = await api.post("/user/forgot-password/reset", { email, password });
+        return resp.data;
+    } catch (err) {
+        const message = err.response?.data?.error || "Não foi possível redefinir a senha.";
+        throw new Error(message);
+    }
+}

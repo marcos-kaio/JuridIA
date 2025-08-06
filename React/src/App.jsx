@@ -6,6 +6,8 @@ import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 import ChatPage from './pages/ChatPage';
 import ComparePage from './pages/ComparePage';
+import ForgotPasswordPage from './pages/ForgotPasswordPage';
+import ResetPasswordPage from './pages/ResetPasswordPage';
 
 function App() {
   return (
@@ -19,6 +21,8 @@ function App() {
             <Route path='/register' element={<RegisterPage />} />
             <Route path='/chat' element={<ChatPage />} />
             <Route path='/compare/:id' element={<ComparePage />} />
+            <Route path='/forgot-password' element={<ForgotPasswordPage />} />
+            <Route path='/reset-password' element={<ResetPasswordPage />} />
           </Routes>
         </div>
       </Router>
