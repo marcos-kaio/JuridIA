@@ -47,8 +47,8 @@ Instruções para configurar e rodar o projeto em sua máquina local para fins d
 1. Instale o Node.js:
 - Clique no link [Node.js](https://nodejs.org/en/download/) (versão 14.x ou superior) ou utilize o `sudo`:
 ```bash
-    sudo apt install nodejs
-  ```
+   sudo apt install nodejs
+```
  2. Baixe o Git no link abaixo:
 - [Git](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git)
 
@@ -58,18 +58,18 @@ Passo a passo de como obter o programa em execução
 ```bash
    git clone https://github.com/marcos-kaio/JuridIA.git
    cd JuridIA
-   ```
+```
 2. Instalar dependências:
 ```bash
-    npm install
-``` 
+   npm install
+```
 ```bash
-    npm run install:all
+  npm run install:all
 ```
 ### Rodando
 - Na raiz do projeto:
 ```bash
-	npm run start
+   npm run start
 ```
 - O servidor estará rodando em `http://localhost:3000`.
 - O acesso ao banco de dados remoto ocorre automaticamente.
@@ -78,11 +78,11 @@ Passo a passo de como obter o programa em execução
 
 - Para rodar os testes siga as instruções abaixo:
 ```bash
-	npm test
+   npm test
 ```
 - Para rodar os testes com relatório de cobertura de código:
 ```bash
-	npm run test:coverage
+   npm run test:coverage
 ```
 
 
