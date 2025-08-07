@@ -3,7 +3,6 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "postinstall": "npm run install:all",
     "install:all": "npm install --prefix Server && npm install --prefix React",
     "dev:frontend": "npm run dev --prefix React",
     "dev:backend": "npm run dev --prefix Server",

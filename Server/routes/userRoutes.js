@@ -1,9 +1,9 @@
-import express from "express";
-import { User } from "../models/db.js";
-import { requireAuth } from "../middlewares/auth.js";
-import dotenv from "dotenv";
-import jwt from "jsonwebtoken";
-import bcrypt from "bcrypt";
+import express from 'express';
+import { User } from '../models/db.js';
+import { requireAuth } from '../middlewares/auth.js';
+import dotenv from 'dotenv';
+import jwt from 'jsonwebtoken';
+import bcrypt from 'bcrypt';
 const saltRounds = 10;
 
 dotenv.config();
@@ -12,7 +12,7 @@ const router = express.Router();
 router.use(express.json());
 
 // cadastro de novo usuário - /user/register
-router.post("/register", async (req, res) => {
+router.post('/register', async (req, res) => {
   try {
     // ordem da estrutura de envio de requisição:
     const { username, email, birthday, escolaridade, password } = req.body;
@@ -20,7 +20,7 @@ router.post("/register", async (req, res) => {
     if (!username || !email || !password) {
       return res
         .status(400)
-        .json({ error: "O nome de usuário, email e senha são obrigatórios!" });
+        .json({ error: 'O nome de usuário, email e senha são obrigatórios!' });
     }
 
     // verificação da existência do email no banco de dados
@@ -28,7 +28,7 @@ router.post("/register", async (req, res) => {
     if (existingEmail) {
       return res
         .status(409)
-        .json({ error: "E-mail já existente, tente outro!" });
+        .json({ error: 'E-mail já existente, tente outro!' });
     }
 
     // criptografia da senha
@@ -50,26 +50,28 @@ router.post("/register", async (req, res) => {
       created_at: newUser.createdAt,
     });
   } catch (err) {
-    console.error("Erro detalhado ao criar usuário:", err.message, err);
-    return res.status(500).json({ "Erro interno ao cadastrar usuário": err.message });
+    console.error('Erro detalhado ao criar usuário:', err.message, err);
+    return res
+      .status(500)
+      .json({ 'Erro interno ao cadastrar usuário': err.message });
   }
 });
 
-router.post("/login", async (req, res) => {
+router.post('/login', async (req, res) => {
   const { email, password } = req.body;
   if (!email || !password)
-    return res.status(400).json({ error: "Email e senha são obrigatórios." });
+    return res.status(400).json({ error: 'Email e senha são obrigatórios.' });
 
   // confere email
   const user = await User.findOne({ where: { email } });
-  if (!user) return res.status(401).json({ error: "Credenciais inválidas." });
+  if (!user) return res.status(401).json({ error: 'Credenciais inválidas.' });
 
   // compara senha
   const match = await bcrypt.compare(password, user.password);
-  if (!match) return res.status(401).json({ error: "Credenciais inválidas." });
+  if (!match) return res.status(401).json({ error: 'Credenciais inválidas.' });
 
   const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET, {
-    expiresIn: "1h",
+    expiresIn: '1h',
   });
 
   res.json({
@@ -78,13 +80,43 @@ router.post("/login", async (req, res) => {
   });
 });
 
+router.put('/update-education', requireAuth, async (req, res) => {
+  try {
+    const { escolaridade } = req.body;
+    if (!escolaridade) {
+      return res
+        .status(400)
+        .json({ error: 'O campo escolaridade é obrigatório.' });
+    }
+
+    // busca o user
+    const user = await User.findByPk(req.user.id);
+    if (!user) {
+      return res.status(404).json({ error: 'Usuário não encontrado.' });
+    }
+
+    // atualiza e salva
+    user.escolaridade = escolaridade;
+    await user.save();
+
+    res.json({ message: 'Nível de escolaridade atualizado com sucesso.' });
+  } catch (err) {
+    console.error('Erro ao atualizar escolaridade:', err);
+    res
+      .status(500)
+      .json({ error: 'Erro interno ao atualizar a escolaridade.' });
+  }
+});
+
 // -- inclusão de atualização de informações de user --
 
 // -- inclusão de deleção de user --
 
 // verifica se token é válido
-router.get("/me", requireAuth, (req, res) => {
-  User.findByPk(req.user.id, { attributes: ["id", "username", "email"] })
+router.get('/me', requireAuth, (req, res) => {
+  User.findByPk(req.user.id, {
+    attributes: ['id', 'username', 'email', 'escolaridade'],
+  })
     .then((user) => res.json(user))
     .catch(() => res.status(500).end());
 });
