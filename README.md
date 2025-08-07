@@ -1,90 +1,103 @@
-## Projeto de Desenvolvimento de Software - CIn UFPE
+# Projeto de Desenvolvimento de Software - CIn UFPE
+
 # JuridIA
 
-Sistema que tem como objetivo simplificar documentos jurídicos combinando **frontend em React + Vite** com **backend em Node.js/MySQL** e **Gemini API**.
+O JuridIA é um sistema inovador que utiliza inteligência artificial para simplificar documentos jurídicos complexos em resumos claros e diretos. Ele combina uma interface de usuário moderna e responsiva com um robusto backend para interagir com a API. A aplicação foi desenvolvida com uma arquitetura modular, separando as responsabilidades do frontend e do backend, o que garante maior escalabilidade e manutenibilidade.
+##
+**Link para o site:** [https://juridia-9218.vercel.app/](https://juridia-9218.vercel.app/)
+##
 
----
+## Tecnologias Utilizadas
+O projeto foi construído utilizando as seguintes tecnologias e ferramentas:
 
-Link para o site: https://juridia-9218.vercel.app/
+**Frontend:** 
+- **React + Vite:** Para uma interface de usuário rápida e eficiente.
+- **Tailwind CSS:** Para estilização e design responsivo.
 
----
+**Backend:** 
+- **Node.js + Express.js:** Para a criação da API RESTful.
+- **PostgreSQL:** Para gerenciamento do banco de dados relacional.
+- **Gemini API:** Para o processamento de documentos e geração de resumos.
 
-## Tecnologias usadas
+**Ferramentas:** 
+- **Git:** Controle de versão do projeto.
+- **Render:** Plataforma de hospedagem do banco de dados e do backend.
+- **Vercel:** Plataforma de hospedagem do frontend.
 
-- **Frontend:** React + Vite, Tailwind CSS
-- **Backend:** Node.js + Express, MySQL + Sequelize
-- **Controle de versão:** Git
+## Funcionalidades
+Abaixo estão as principais funcionalidades implementadas no projeto:
+- **Autenticação de Usuário:** O sistema inclui um sistema de autenticação que permite aos usuários criar uma conta e fazer login para acessar seus documentos e histórico.
+-  **Simplificação de Documentos:** A funcionalidade central do sistema é a simplificação de documentos jurídicos complexos, traduzindo-os para uma linguagem mais acessível.
+-  **Entrada de Documentos:** A plataforma oferece a capacidade de enviar documentos diretamente.
+-  **Exportação em PDF:** O usuário pode receber o documento simplificado em formato PDF para fácil salvamento, compartilhamento ou impressão.
+-  **Comparação de Trechos:** O sistema permite comparar o texto simplificado com o documento original para verificar a origem das informações, garantindo a precisão e maior entendimento.
+- **Assistente de Dúvidas:** Uma interface de diálogo com IA está disponível para que o usuário possa fazer perguntas e esclarecer pontos do documento após a simplificação.
+- **Histórico de Conversa:** O histórico de interações com a IA, incluindo documentos enviados e dúvidas esclarecidas, é armazenado e pode ser acessado futuramente.
+- **Arquitetura Modular:** O projeto foi desenvolvido com uma arquitetura bem definida, separando a interface (frontend), a lógica de negócio (backend) e o banco de dados.
 
----
+## Colaborando
 
-#### Acesse nosso guia de contribuição da equipe clicando [aqui](https://github.com/marcos-kaio/JuridIA/blob/main/CONTRIBUTING.md)!
+Por favor, leia o [CONTRIBUTING.md](https://github.com/marcos-kaio/JuridIA/blob/main/CONTRIBUTING.md) para obter detalhes sobre o nossas regras de contribuição.
 
-## Como configurar o projeto localmente
+## Começando
 
-1. Instalar o node:
-    
-    - Baixar o [node aqui](https://nodejs.org/en) ou instalar com o `sudo`.
+Instruções para configurar e rodar o projeto em sua máquina local para fins de desenvolvimento e teste.
 
-    ```bash
+### Pré-Requisitos
+1. Instale o Node.js:
+- Clique no link [Node.js](https://nodejs.org/en/download/) (versão 14.x ou superior) ou utilize o `sudo`:
+```bash
     sudo apt install nodejs
-    ```
+  ```
+ 2. Baixe o Git no link abaixo:
+- [Git](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git)
 
-2. Clonar o repositório e entrar no mesmo:
-   ```bash
+### Instalação
+Passo a passo de como obter o programa em execução
+1. Clonar o repositório e entrar no mesmo: 
+```bash
    git clone https://github.com/marcos-kaio/JuridIA.git
    cd JuridIA
    ```
-  
-3. Instalar as dependências do sistema:
-    ```bash
+2. Instalar dependências:
+```bash
     npm install
-    ``` 
-    ```bash
+``` 
+```bash
     npm run install:all
-    ```
-
-## Como rodar
-
+```
+### Rodando
 - Na raiz do projeto:
-    ```bash
-    npm run start
-    ```
-- Abra no `localhost:3000`.
+```bash
+	npm run start
+```
+- O servidor estará rodando em `http://localhost:3000`.
+- O acesso ao banco de dados remoto ocorre automaticamente.
 
-## Estrutura de pastas
+## Executando os Testes
+
+- Para rodar os testes siga as instruções abaixo:
+```bash
+	npm test
 ```
-JuridIA/
-├── React/                    # Frontend em React com Vite
-│   ├── node_modules/         # Dependências do frontend
-│   ├── src/                  # Código-fonte do React
-│   │   ├── assets/           # Ativos estáticos como imagens, fontes, etc.
-│   │   ├── components/       # Componentes React reutilizáveis
-│   │   ├── pages/            # Páginas principais da aplicação
-│   │   ├── services/         # Serviços utilizados na aplicação
-│   │   ├── app.jsx           # Componente principal da aplicação
-│   │   ├── main.jsx          # Ponto de entrada da aplicação React
-│   │   └── index.css         # Estilos globais da aplicação
-│   |
-│   ├── eslint.config.js      # Configuração do ESLint
-│   ├── index.html            # Página HTML principal
-│   ├── package-lock.json     # Controle de versões das dependências
-│   ├── package.json          # Dependências e scripts do frontend
-│   └── vite.config.js        # Configuração do Vite
-│
-├── Server/                   # Backend em Node.js com Express
-│   ├── controllers/          # Lógica dos controladores da API
-│   ├── middlewares/          # Funções que rodam entre a requisição e a resposta
-│   ├── models/               # Representação dos dados e interação com o banco de dados
-│   ├── routes/               # Definição das rotas/endpoints da API
-│   ├── services/             # Serviços externos ou internos
-│   ├── utils/                # Funções utilitárias
-│   ├── index.js              # Ponto de entrada da API
-│   ├── package-lock.json     # Controle de versões das dependências
-│   └── package.json          # Dependências e scripts do backend
-│
-├── .gitignore                # Arquivos ignorados no Git (raiz)
-├── CONTRIBUTING.md           # Guia para contribuições no projeto
-├── package-lock.json         # Controle de versões das dependências da raiz
-├── package.json              # Dependências e scripts gerais
-└── README.md                 # Documentação principal do projeto
+- Para rodar os testes com relatório de cobertura de código:
+```bash
+	npm run test:coverage
 ```
+
+
+## Autores
+Para suporte ou dúvidas, entre em contato com os membros da equipe:
+- **Esdras Vinícius**: [link do github](https://github.com/esdrasvinicius3)
+- **Janderson Freitas**: [link do github](https://github.com/JinzoFreitas)
+- **Jean Lucas**: [link do github](https://github.com/JBDhh)
+- **Marcos Kaiô**: [link do github](https://github.com/marcos-kaio)
+- **Maria Eduarda Veloso**: [link do github](https://github.com/Duda-Veloso)
+- **Maria Fernanda Amorim**: [link do github](https://github.com/MariaFFA)
+- **Miguel Santos**: [link do github](https://github.com/miguelsndc)
+
+Você também pode ver a lista de todos os [colaboradores](https://github.com/marcos-kaio/JuridIA/graphs/contributors) que participaram deste projeto.
+
+## Licença
+
+Este projeto está licenciado sob a Licença MIT. Para mais informações, veja o arquivo `LICENSE` na raiz do projeto.
