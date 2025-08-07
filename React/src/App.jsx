@@ -8,13 +8,14 @@ import ChatPage from './pages/ChatPage';
 import ComparePage from './pages/ComparePage';
 import ForgotPasswordPage from './pages/ForgotPasswordPage';
 import ResetPasswordPage from './pages/ResetPasswordPage';
+import ProfilePage from './pages/ProfilePage';
 
 function App() {
   return (
     <NotificationProvider>
       <Router>
         <div className='App'>
-          <Notification /> 
+          <Notification />
           <Routes>
             <Route path='/' element={<LandingPage />} />
             <Route path='/login' element={<LoginPage />} />
@@ -23,6 +24,7 @@ function App() {
             <Route path='/compare/:id' element={<ComparePage />} />
             <Route path='/forgot-password' element={<ForgotPasswordPage />} />
             <Route path='/reset-password' element={<ResetPasswordPage />} />
+            <Route path='/profile' element={<ProfilePage />} />
           </Routes>
         </div>
       </Router>
