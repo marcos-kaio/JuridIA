@@ -64,7 +64,7 @@ Passo a passo de como obter o programa em execução
    npm install
 ```
 ```bash
-  npm run install:all
+   npm run install:all
 ```
 ### Rodando
 - Na raiz do projeto:
