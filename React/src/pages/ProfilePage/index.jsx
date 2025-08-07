@@ -59,7 +59,6 @@ const ProfilePage = () => {
       const { valid, user: userData } = await checkAuth();
       if (valid) {
         setUser(userData);
-        console.log(userData);
         setEscolaridade(userData.escolaridade || '');
       } else {
         navigate('/login');
