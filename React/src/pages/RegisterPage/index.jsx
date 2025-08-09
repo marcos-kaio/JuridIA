@@ -3,6 +3,23 @@ import { Link, useNavigate } from 'react-router-dom';
 import { login as apiLogin, register } from '../../services/authService.js';
 import { useNotification } from '../../context/NotificationContext.jsx';
 
+const EyeIcon = (props) => (
+    <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/>
+        <circle cx="12" cy="12" r="3"/>
+    </svg>
+);
+
+const EyeOffIcon = (props) => (
+    <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M9.88 9.88a3 3 0 1 0 4.24 4.24"/>
+        <path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68"/>
+        <path d="M6.61 6.61A13.526 13.526 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61"/>
+        <line x1="2" x2="22" y1="2" y2="22"/>
+    </svg>
+);
+
+
 const RegisterPage = () => {
   const navigate = useNavigate();
   const { showNotification } = useNotification();
@@ -14,6 +31,8 @@ const RegisterPage = () => {
     password: ''
   });
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   function handleChange(e) {
     const { name, value } = e.target;
@@ -27,7 +46,7 @@ const RegisterPage = () => {
       } else if (onlyNums.length > 2) {
         formattedDate = `${onlyNums.slice(0, 2)}/${onlyNums.slice(2, 4)}`;
       }
-      
+
       setUserInfo(c => ({ ...c, [name]: formattedDate }));
     } else {
       setUserInfo(c => ({ ...c, [name]: value }));
@@ -42,7 +61,6 @@ const RegisterPage = () => {
       return;
     }
 
-    // VALIDAÇÃO DE TAMANHO DA SENHA ADICIONADA
     if (userInfo.password.length < 6) {
       showNotification("A senha deve ter pelo menos 6 caracteres.", "error");
       return;
@@ -51,13 +69,11 @@ const RegisterPage = () => {
     const submissionData = { ...userInfo };
 
     if (submissionData.birthday) {
-      // Validação de data mais robusta
       const parts = submissionData.birthday.split('/');
       if (parts.length === 3) {
         const [day, month, year] = parts;
         if (day.length === 2 && month.length === 2 && year.length === 4) {
           const date = new Date(`${year}-${month}-${day}`);
-          // Verifica se a data é válida (ex: não aceita 31/02) e se o ano é razoável
           if (date.getFullYear() == year && date.getMonth() + 1 == month && date.getDate() == day && year > 1900 && year < new Date().getFullYear()) {
             submissionData.birthday = `${year}-${month}-${day}`;
           } else {
@@ -77,7 +93,7 @@ const RegisterPage = () => {
     try {
       const data = await register(submissionData);
       showNotification(`Registro bem-sucedido. Seja bem vindo(a), ${data.username}!`, 'success');
-      
+
       await apiLogin({
         email: userInfo.email,
         password: userInfo.password
@@ -86,7 +102,7 @@ const RegisterPage = () => {
 
     } catch (err) {
       console.error("Erro ao registrar: ", err);
-      showNotification(err.message, 'error'); 
+      showNotification(err.message, 'error');
     }
   }
 
@@ -124,7 +140,7 @@ const RegisterPage = () => {
             </div>
           </div>
           <div className="flex flex-col gap-5">
-            {/* Input de Escolaridade (CORRIGIDO) */}
+            {/* Input de Escolaridade */}
             <div className="relative flex items-center bg-[rgba(229,229,230,0.81)] rounded-md w-full">
               <div className="absolute left-4 pointer-events-none">
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M2 3H7C8.10457 3 9 3.89543 9 5V21C9 19.8954 8.10457 19 7 19H2V3Z" stroke="#AFAFAF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/><path d="M22 3H17C15.8954 3 15 3.89543 15 5V21C15 19.8954 15.8954 19 17 19H22V3Z" stroke="#AFAFAF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
@@ -137,18 +153,24 @@ const RegisterPage = () => {
               </select>
             </div>
             {/* Input de Senha */}
-            <div className="relative flex items-center bg-[rgba(229,229,230,0.81)] rounded-md w-full">
+            <div className="group relative flex items-center bg-[rgba(229,229,230,0.81)] rounded-md w-full">
               <div className="absolute left-4 pointer-events-none">
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="3" y="11" width="18" height="11" rx="2" ry="2" stroke="#AFAFAF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/><path d="M7 11V7C7 4.23858 9.23858 2 12 2C14.7614 2 17 4.23858 17 7V11" stroke="#AFAFAF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
               </div>
-              <input type="password" name='password' value={userInfo.password} onChange={handleChange} placeholder="Digite sua senha" className="w-full p-5 pl-12 bg-transparent text-lg text-[#1F2A44] rounded-md focus:outline-none focus:ring-2 focus:ring-[#0DACAC] placeholder:text-[#AFAFAF]" required />
+              <input type={showPassword ? "text" : "password"} name='password' value={userInfo.password} onChange={handleChange} placeholder="Digite sua senha" className="w-full p-5 pl-12 bg-transparent text-lg text-[#1F2A44] rounded-md focus:outline-none focus:ring-2 focus:ring-[#0DACAC] placeholder:text-[#AFAFAF]" required />
+              <div className="absolute right-4 cursor-pointer invisible group-hover:visible" onClick={() => setShowPassword(!showPassword)}>
+                {showPassword ? <EyeOffIcon className="text-[#AFAFAF]"/> : <EyeIcon className="text-[#AFAFAF]"/>}
+              </div>
             </div>
             {/* Input de Confirmar Senha */}
-            <div className="relative flex items-center bg-[rgba(229,229,230,0.81)] rounded-md w-full">
+            <div className="group relative flex items-center bg-[rgba(229,229,230,0.81)] rounded-md w-full">
               <div className="absolute left-4 pointer-events-none">
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="3" y="11" width="18" height="11" rx="2" ry="2" stroke="#AFAFAF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/><path d="M7 11V7C7 4.23858 9.23858 2 12 2C14.7614 2 17 4.23858 17 7V11" stroke="#AFAFAF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
               </div>
-              <input type="password" name="confirmPassword" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} placeholder="Confirme sua senha" className="w-full p-5 pl-12 bg-transparent text-lg text-[#1F2A44] rounded-md focus:outline-none focus:ring-2 focus:ring-[#0DACAC] placeholder:text-[#AFAFAF]" required />
+              <input type={showConfirmPassword ? "text" : "password"} name="confirmPassword" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} placeholder="Confirme sua senha" className="w-full p-5 pl-12 bg-transparent text-lg text-[#1F2A44] rounded-md focus:outline-none focus:ring-2 focus:ring-[#0DACAC] placeholder:text-[#AFAFAF]" required />
+              <div className="absolute right-4 cursor-pointer invisible group-hover:visible" onClick={() => setShowConfirmPassword(!showConfirmPassword)}>
+                {showConfirmPassword ? <EyeOffIcon className="text-[#AFAFAF]"/> : <EyeIcon className="text-[#AFAFAF]"/>}
+              </div>
             </div>
           </div>
           <div className="md:col-span-2 flex flex-col items-center gap-4 mt-2">
