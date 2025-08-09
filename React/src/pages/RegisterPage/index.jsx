@@ -38,10 +38,14 @@ const RegisterPage = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // --- VERIFICAÇÃO DE SENHA ADICIONADA AQUI ---
+    if (userInfo.password.length < 6) {
+      showNotification("A senha deve ter pelo menos 6 caracteres.", "error");
+      return;
+    }
+
     if (userInfo.password !== confirmPassword) {
       showNotification("As senhas não coincidem!", 'error');
-      return; // Interrompe o envio do formulário
+      return; 
     }
 
     const submissionData = { ...userInfo };
