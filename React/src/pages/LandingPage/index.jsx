@@ -3,7 +3,6 @@ import { Link, useNavigate } from 'react-router-dom';
 import { checkAuth } from '../../services/authService';
 import JuridiaLogo from '../../assets/juridia_logo.png';
 
-// Importando os componentes de seção
 import { HeroSection } from '../../components/Landing/HeroSection';
 import { ContractSimplifierSection } from '../../components/Landing/ContractSimplifierSection';
 import { HowItWorksSection } from '../../components/Landing/HowItWorksSection';
@@ -17,7 +16,7 @@ function LandingPage() {
 
   const sectionRefs = {
     home: useRef(null),
-    'contract-simplifier': useRef(null), // Adicionado para referência
+    'contract-simplifier': useRef(null),
     'how-it-works': useRef(null),
     about: useRef(null),
     faq: useRef(null),
