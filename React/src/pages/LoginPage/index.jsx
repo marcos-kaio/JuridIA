@@ -1,8 +1,25 @@
 import { useEffect, useState } from "react";
 import { checkAuth, login } from "../../services/authService.js";
-import { useNavigate, Link } from "react-router-dom"; // Importe o Link
+import { useNavigate, Link } from "react-router-dom";
 import { useNotification } from "../../context/NotificationContext.jsx";
-import JuridiaLogo from '../../assets/juridia_logo_texto_branco.png'; 
+import JuridiaLogo from '../../assets/juridia_logo_texto_branco.png';
+
+// Ícones de olho para a funcionalidade de ver/ocultar senha
+const EyeIcon = (props) => (
+    <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/>
+        <circle cx="12" cy="12" r="3"/>
+    </svg>
+);
+
+const EyeOffIcon = (props) => (
+    <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M9.88 9.88a3 3 0 1 0 4.24 4.24"/>
+        <path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68"/>
+        <path d="M6.61 6.61A13.526 13.526 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61"/>
+        <line x1="2" x2="22" y1="2" y2="22"/>
+    </svg>
+);
 
 const LoginIllustration = () => (
   <div className='max-w-[600px] px-8'>
@@ -12,6 +29,7 @@ const LoginIllustration = () => (
 
 const LoginPage = () => {
   const [credenciais, setCredenciais] = useState({ email: '', password: '' });
+  const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
   const { showNotification } = useNotification();
 
@@ -45,7 +63,9 @@ const LoginPage = () => {
   return (
     <div className='flex w-full min-h-screen font-sans'>
       <div className='hidden lg:flex lg:w-[47%] bg-[#1F2A44] justify-center items-center'>
-        <LoginIllustration />
+        <Link to="/">
+          <LoginIllustration />
+        </Link>
       </div>
       <form
         onSubmit={handleSubmit}
@@ -87,12 +107,13 @@ const LoginPage = () => {
           <input
             type='email'
             name='email'
+            value={credenciais.email}
             onChange={handleChange}
             placeholder='Digite seu E-mail'
             className='w-full py-5 px-12 text-lg bg-[rgba(229,229,230,0.81)] border border-gray-300 rounded-md focus:outline-none focus:border-[#0DACAC]'
           />
         </div>
-        <div className='relative w-full max-w-[430px]'>
+        <div className='group relative w-full max-w-[430px]'>
           <div className='absolute left-4 top-1/2 -translate-y-1/2 pointer-events-none'>
             <svg
               width='24'
@@ -123,38 +144,22 @@ const LoginPage = () => {
             </svg>
           </div>
           <input
-            type='password'
+            type={showPassword ? 'text' : 'password'}
             name='password'
+            value={credenciais.password}
             onChange={handleChange}
             placeholder='Digite sua senha'
             className='w-full py-5 px-12 text-lg bg-[rgba(229,229,230,0.81)] border border-gray-300 rounded-md focus:outline-none focus:border-[#0DACAC]'
           />
+          <div className="absolute right-4 top-1/2 -translate-y-1/2 cursor-pointer invisible group-hover:visible" onClick={() => setShowPassword(!showPassword)}>
+            {showPassword ? <EyeOffIcon className="text-[#AFAFAF]"/> : <EyeIcon className="text-[#AFAFAF]"/>}
+          </div>
         </div>
-<<<<<<< HEAD
         <Link to="/forgot-password" className="w-full max-w-[430px] text-right text-[#1F2A44] text-base underline">Esqueci a senha</Link>
         <button type="submit" className="w-full max-w-[430px] p-5 bg-[#0DACAC] text-white text-3xl font-medium rounded-2xl cursor-pointer hover:bg-[#089a9a] transition-colors">Login</button>
         <div className="text-center text-base">
           <span className="text-[#1f2a44]">Não tem uma conta? </span>
           <Link to="/register" className="text-[#007B9E] no-underline">Cadastre-se</Link>
-=======
-        <a
-          href='#'
-          className='w-full max-w-[430px] text-right text-[#1F2A44] text-base underline'
-        >
-          Esqueci a senha
-        </a>
-        <button
-          type='submit'
-          className='w-full max-w-[430px] p-5 bg-[#0DACAC] text-white text-3xl font-medium rounded-2xl cursor-pointer hover:bg-[#089a9a] transition-colors'
-        >
-          Login
-        </button>
-        <div className='text-center text-base'>
-          <span className='text-[#1f2a44]'>Não tem uma conta? </span>
-          <a href='/register' className='text-[#007B9E] no-underline'>
-            Cadastre-se
-          </a>
->>>>>>> 5db297d (feat: pagina de perfil + move o usuario pra ela ao clicar na foto de perfil)
         </div>
       </form>
     </div>

@@ -5,7 +5,6 @@ const api = axios.create({
   withCredentials: false,
 });
 
-// Interceptor para adicionar o token em cada requisição
 api.interceptors.request.use(config => {
   const token = localStorage.getItem('user_token');
   if (token) {
@@ -21,9 +20,7 @@ api.interceptors.response.use(
       localStorage.removeItem('user_token');
       localStorage.removeItem('user_name');
       
-      if (window.location.pathname !== '/login') {
-        window.location.href = '/login';
-      }
+      window.dispatchEvent(new CustomEvent('sessionExpired'));
     }
     return Promise.reject(error);
   }

@@ -11,14 +11,9 @@ export const HeroSection = ({ onStartClick, sectionRef }) => (
         <span className="text-[#0DACAC] font-bold">Rápido, seguro e direto na palma da sua mão.</span>
       </p>
       <button onClick={onStartClick} className="inline-block bg-[#0DACAC] text-white font-montserrat text-2xl font-bold rounded-lg border-none py-4 px-20 cursor-pointer no-underline">
-        Comece agora!
+        Vamos conversar!
       </button>
     </div>
   </section>
 );
 
-// Siga este padrão para criar:
-// - ContractSimplifierSection.jsx
-// - HowItWorksSection.jsx
-// - AboutSection.jsx
-// - FaqSection.jsx
