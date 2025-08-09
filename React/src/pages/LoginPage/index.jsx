@@ -130,31 +130,11 @@ const LoginPage = () => {
             className='w-full py-5 px-12 text-lg bg-[rgba(229,229,230,0.81)] border border-gray-300 rounded-md focus:outline-none focus:border-[#0DACAC]'
           />
         </div>
-<<<<<<< HEAD
         <Link to="/forgot-password" className="w-full max-w-[430px] text-right text-[#1F2A44] text-base underline">Esqueci a senha</Link>
         <button type="submit" className="w-full max-w-[430px] p-5 bg-[#0DACAC] text-white text-3xl font-medium rounded-2xl cursor-pointer hover:bg-[#089a9a] transition-colors">Login</button>
         <div className="text-center text-base">
           <span className="text-[#1f2a44]">Não tem uma conta? </span>
           <Link to="/register" className="text-[#007B9E] no-underline">Cadastre-se</Link>
-=======
-        <a
-          href='#'
-          className='w-full max-w-[430px] text-right text-[#1F2A44] text-base underline'
-        >
-          Esqueci a senha
-        </a>
-        <button
-          type='submit'
-          className='w-full max-w-[430px] p-5 bg-[#0DACAC] text-white text-3xl font-medium rounded-2xl cursor-pointer hover:bg-[#089a9a] transition-colors'
-        >
-          Login
-        </button>
-        <div className='text-center text-base'>
-          <span className='text-[#1f2a44]'>Não tem uma conta? </span>
-          <a href='/register' className='text-[#007B9E] no-underline'>
-            Cadastre-se
-          </a>
->>>>>>> 5db297d (feat: pagina de perfil + move o usuario pra ela ao clicar na foto de perfil)
         </div>
       </form>
     </div>
