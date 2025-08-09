@@ -13,7 +13,6 @@ const RegisterPage = () => {
     escolaridade: '',
     password: ''
   });
-  // Novo estado para a confirmação de senha
   const [confirmPassword, setConfirmPassword] = useState('');
 
   function handleChange(e) {
@@ -38,24 +37,33 @@ const RegisterPage = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    if (userInfo.password !== confirmPassword) {
+      showNotification("As senhas não coincidem!", 'error');
+      return;
+    }
+
+    // VALIDAÇÃO DE TAMANHO DA SENHA ADICIONADA
     if (userInfo.password.length < 6) {
       showNotification("A senha deve ter pelo menos 6 caracteres.", "error");
       return;
     }
 
-    if (userInfo.password !== confirmPassword) {
-      showNotification("As senhas não coincidem!", 'error');
-      return; 
-    }
-
     const submissionData = { ...userInfo };
 
     if (submissionData.birthday) {
+      // Validação de data mais robusta
       const parts = submissionData.birthday.split('/');
       if (parts.length === 3) {
         const [day, month, year] = parts;
         if (day.length === 2 && month.length === 2 && year.length === 4) {
-          submissionData.birthday = `${year}-${month}-${day}`;
+          const date = new Date(`${year}-${month}-${day}`);
+          // Verifica se a data é válida (ex: não aceita 31/02) e se o ano é razoável
+          if (date.getFullYear() == year && date.getMonth() + 1 == month && date.getDate() == day && year > 1900 && year < new Date().getFullYear()) {
+            submissionData.birthday = `${year}-${month}-${day}`;
+          } else {
+            showNotification("Data de nascimento inválida.", 'error');
+            return;
+          }
         } else {
           showNotification("Formato de data inválido. Use DD/MM/AAAA.", 'error');
           return;
