@@ -21,6 +21,7 @@ export const ChatHeader = ({ activeConversation }) => {
             document.body.appendChild(a);
             a.click();
             document.body.removeChild(a);
+            URL.revokeObjectURL(url); // Libera a memória
         }
     } catch (error) {
         showNotification("Não foi possível obter o arquivo.", 'error');
@@ -31,14 +32,31 @@ export const ChatHeader = ({ activeConversation }) => {
     try {
       const blob = await downloadSimplifiedPdf(docId);
       const url = URL.createObjectURL(blob);
-      const newWindow = window.open(url, '_blank');
-      if (newWindow) {
-        newWindow.onload = () => {
-          newWindow.print();
-        };
-      } else {
-        showNotification("O bloqueador de pop-ups pode estar impedindo a impressão.", 'info');
-      }
+
+      const iframe = document.createElement('iframe');
+      iframe.style.display = 'none';
+      iframe.src = url;
+      
+      const cleanup = () => {
+        document.body.removeChild(iframe);
+        URL.revokeObjectURL(url);
+      };
+      
+      document.body.appendChild(iframe);
+
+      iframe.onload = () => {
+        try {
+          // Define o evento que será chamado APÓS a impressão
+          iframe.contentWindow.onafterprint = cleanup;
+          
+          iframe.contentWindow.focus();
+          iframe.contentWindow.print();
+        } catch (e) {
+          showNotification("Não foi possível abrir o diálogo de impressão.", 'error');
+          cleanup(); // Limpa se houver um erro ao tentar imprimir
+        }
+      };
+
     } catch (error) {
       showNotification("Não foi possível obter o arquivo para impressão.", 'error');
     }
