@@ -2,7 +2,9 @@ import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { login as apiLogin, register } from '../../services/authService.js';
 import { useNotification } from '../../context/NotificationContext.jsx';
+import JuridiaLogo from '../../assets/juridia_logo.png'; // Importando o logo colorido
 
+// Ícones de olho para a funcionalidade de ver/ocultar senha
 const EyeIcon = (props) => (
     <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
         <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/>
@@ -46,7 +48,7 @@ const RegisterPage = () => {
       } else if (onlyNums.length > 2) {
         formattedDate = `${onlyNums.slice(0, 2)}/${onlyNums.slice(2, 4)}`;
       }
-
+      
       setUserInfo(c => ({ ...c, [name]: formattedDate }));
     } else {
       setUserInfo(c => ({ ...c, [name]: value }));
@@ -93,7 +95,7 @@ const RegisterPage = () => {
     try {
       const data = await register(submissionData);
       showNotification(`Registro bem-sucedido. Seja bem vindo(a), ${data.username}!`, 'success');
-
+      
       await apiLogin({
         email: userInfo.email,
         password: userInfo.password
@@ -102,13 +104,16 @@ const RegisterPage = () => {
 
     } catch (err) {
       console.error("Erro ao registrar: ", err);
-      showNotification(err.message, 'error');
+      showNotification(err.message, 'error'); 
     }
   }
 
   return (
     <div className="w-full min-h-screen bg-[#1F2A44] flex justify-center items-center p-5 box-border">
       <div className="w-full max-w-5xl bg-[#F4F7FB] rounded-lg p-10 md:p-12 box-border flex flex-col items-center gap-6">
+        <Link to="/">
+            <img src={JuridiaLogo} alt="Logo JuridIA - Voltar para a página inicial" className="w-48 mb-4" />
+        </Link>
         <div className="text-center">
           <h1 className="text-[#1F2A44] text-4xl md:text-5xl font-bold font-montserrat">Cadastre-se</h1>
           <p className="text-[#A0A0A0] text-base font-light mt-2.5">

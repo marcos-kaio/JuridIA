@@ -4,6 +4,7 @@ import { useNavigate, Link } from "react-router-dom";
 import { useNotification } from "../../context/NotificationContext.jsx";
 import JuridiaLogo from '../../assets/juridia_logo_texto_branco.png';
 
+// Ícones de olho para a funcionalidade de ver/ocultar senha
 const EyeIcon = (props) => (
     <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
         <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/>
@@ -28,7 +29,7 @@ const LoginIllustration = () => (
 
 const LoginPage = () => {
   const [credenciais, setCredenciais] = useState({ email: '', password: '' });
-  const [showPassword, setShowPassword] = useState(false); // Estado para controlar a visibilidade
+  const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
   const { showNotification } = useNotification();
 
@@ -62,7 +63,9 @@ const LoginPage = () => {
   return (
     <div className='flex w-full min-h-screen font-sans'>
       <div className='hidden lg:flex lg:w-[47%] bg-[#1F2A44] justify-center items-center'>
-        <LoginIllustration />
+        <Link to="/">
+          <LoginIllustration />
+        </Link>
       </div>
       <form
         onSubmit={handleSubmit}
