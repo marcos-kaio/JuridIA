@@ -26,9 +26,10 @@ router.post('/register', async (req, res) => {
     // verificação da existência do email no banco de dados
     const existingEmail = await User.findOne({ where: { email } });
     if (existingEmail) {
+      // MENSAGEM DE ERRO ESPECÍFICA AQUI
       return res
-        .status(409)
-        .json({ error: 'E-mail já existente, tente outro!' });
+        .status(409) // Status 409 (Conflict) é mais apropriado
+        .json({ error: 'Este e-mail já está em uso. Por favor, tente outro.' });
     }
 
     // criptografia da senha
@@ -53,7 +54,7 @@ router.post('/register', async (req, res) => {
     console.error('Erro detalhado ao criar usuário:', err.message, err);
     return res
       .status(500)
-      .json({ 'Erro interno ao cadastrar usuário': err.message });
+      .json({ error: 'Ocorreu um erro interno ao cadastrar o usuário.' }); // Mensagem mais genérica para o usuário
   }
 });
 

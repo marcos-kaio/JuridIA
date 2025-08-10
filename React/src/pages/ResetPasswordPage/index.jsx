@@ -4,11 +4,29 @@ import { verifyUserForPasswordReset, resetPassword } from "../../services/authSe
 import { useNotification } from "../../context/NotificationContext.jsx";
 import JuridiaLogo from '../../assets/juridia_logo_texto_branco.png';
 
+const EyeIcon = (props) => (
+    <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/>
+        <circle cx="12" cy="12" r="3"/>
+    </svg>
+);
+
+const EyeOffIcon = (props) => (
+    <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M9.88 9.88a3 3 0 1 0 4.24 4.24"/>
+        <path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68"/>
+        <path d="M6.61 6.61A13.526 13.526 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61"/>
+        <line x1="2" x2="22" y1="2" y2="22"/>
+    </svg>
+);
+
 const ResetPasswordPage = () => {
-    const [step, setStep] = useState(1); // 1 for birthday, 2 for password
+    const [step, setStep] = useState(1);
     const [birthday, setBirthday] = useState("");
     const [password, setPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
+    const [showPassword, setShowPassword] = useState(false);
+    const [showConfirmPassword, setShowConfirmPassword] = useState(false);
     const navigate = useNavigate();
     const location = useLocation();
     const email = location.state?.email;
@@ -59,7 +77,7 @@ const ResetPasswordPage = () => {
             showNotification("As senhas não coincidem!", "error");
             return;
         }
-        if (password.length < 6) { // Example validation
+        if (password.length < 6) {
             showNotification("A senha deve ter pelo menos 6 caracteres.", "error");
             return;
         }
@@ -105,17 +123,23 @@ const ResetPasswordPage = () => {
                             <h1 className="text-[#1F2A44] text-5xl font-bold font-montserrat mb-2.5">Nova Senha</h1>
                             <p className="text-[#A0A0A0] text-base font-light">Crie uma nova senha para sua conta.</p>
                         </div>
-                        <div className="relative w-full">
+                        <div className="group relative w-full">
                             <div className="absolute left-4 top-1/2 -translate-y-1/2 pointer-events-none">
                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="3" y="11" width="18" height="11" rx="2" ry="2" stroke="#AFAFAF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/><path d="M7 11V7C7 4.23858 9.23858 2 12 2C14.7614 2 17 4.23858 17 7V11" stroke="#AFAFAF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
                             </div>
-                            <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Nova senha" className="w-full py-5 px-12 text-lg bg-[rgba(229,229,230,0.81)] border border-gray-300 rounded-md focus:outline-none focus:border-[#0DACAC]" required />
+                            <input type={showPassword ? "text" : "password"} value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Nova senha" className="w-full py-5 px-12 text-lg bg-[rgba(229,229,230,0.81)] border border-gray-300 rounded-md focus:outline-none focus:border-[#0DACAC]" required />
+                            <div className="absolute right-4 top-1/2 -translate-y-1/2 cursor-pointer invisible group-hover:visible" onClick={() => setShowPassword(!showPassword)}>
+                                {showPassword ? <EyeOffIcon className="text-[#AFAFAF]"/> : <EyeIcon className="text-[#AFAFAF]"/>}
+                            </div>
                         </div>
-                        <div className="relative w-full">
+                        <div className="group relative w-full">
                            <div className="absolute left-4 top-1/2 -translate-y-1/2 pointer-events-none">
                                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="3" y="11" width="18" height="11" rx="2" ry="2" stroke="#AFAFAF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/><path d="M7 11V7C7 4.23858 9.23858 2 12 2C14.7614 2 17 4.23858 17 7V11" stroke="#AFAFAF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
                             </div>
-                            <input type="password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} placeholder="Confirme a nova senha" className="w-full py-5 px-12 text-lg bg-[rgba(229,229,230,0.81)] border border-gray-300 rounded-md focus:outline-none focus:border-[#0DACAC]" required />
+                            <input type={showConfirmPassword ? "text" : "password"} value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} placeholder="Confirme a nova senha" className="w-full py-5 px-12 text-lg bg-[rgba(229,229,230,0.81)] border border-gray-300 rounded-md focus:outline-none focus:border-[#0DACAC]" required />
+                            <div className="absolute right-4 top-1/2 -translate-y-1/2 cursor-pointer invisible group-hover:visible" onClick={() => setShowConfirmPassword(!showConfirmPassword)}>
+                                {showConfirmPassword ? <EyeOffIcon className="text-[#AFAFAF]"/> : <EyeIcon className="text-[#AFAFAF]"/>}
+                            </div>
                         </div>
                         <button type="submit" className="w-full p-5 bg-[#0DACAC] text-white text-3xl font-medium rounded-2xl cursor-pointer hover:bg-[#089a9a] transition-colors">Redefinir Senha</button>
                     </form>
