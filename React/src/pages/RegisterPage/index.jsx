@@ -55,8 +55,14 @@ const RegisterPage = () => {
     }
   }
 
-  const handleSubmit = async (e) => {
+    const handleSubmit = async (e) => {
     e.preventDefault();
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(userInfo.email)) {
+      showNotification("Por favor, insira um endereço de e-mail válido.", 'error');
+      return;
+    }
 
     if (userInfo.password !== confirmPassword) {
       showNotification("As senhas não coincidem!", 'error');
@@ -72,18 +78,14 @@ const RegisterPage = () => {
 
     if (submissionData.birthday) {
       const parts = submissionData.birthday.split('/');
-      if (parts.length === 3) {
+      if (parts.length === 3 && parts[0].length === 2 && parts[1].length === 2 && parts[2].length === 4) {
         const [day, month, year] = parts;
-        if (day.length === 2 && month.length === 2 && year.length === 4) {
-          const date = new Date(`${year}-${month}-${day}`);
-          if (date.getFullYear() == year && date.getMonth() + 1 == month && date.getDate() == day && year > 1900 && year < new Date().getFullYear()) {
-            submissionData.birthday = `${year}-${month}-${day}`;
-          } else {
-            showNotification("Data de nascimento inválida.", 'error');
-            return;
-          }
+        const date = new Date(`${year}-${month}-${day}T00:00:00`);
+
+        if (!isNaN(date.getTime()) && date.getFullYear() == year && date.getMonth() + 1 == month && date.getDate() == day && date.getFullYear() > 1900 && date <= new Date()) {
+          submissionData.birthday = `${year}-${month}-${day}`;
         } else {
-          showNotification("Formato de data inválido. Use DD/MM/AAAA.", 'error');
+          showNotification("Data de nascimento inválida.", 'error');
           return;
         }
       } else {
