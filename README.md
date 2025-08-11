@@ -6,6 +6,8 @@ O JuridIA é um sistema inovador que utiliza inteligência artificial para simpl
 ##
 **Link para o site:** [https://juridia-9218.vercel.app/](https://juridia-9218.vercel.app/)
 ##
+**Link para o tutorial:** [Video](https://drive.google.com/file/d/1LLB1Xsmc4t3X6PP-qYriKtd4oMGJd9AV/view?usp=drivesdk)
+##
 
 ## Tecnologias Utilizadas
 O projeto foi construído utilizando as seguintes tecnologias e ferramentas:
@@ -97,7 +99,3 @@ Para suporte ou dúvidas, entre em contato com os membros da equipe:
 - **Miguel Santos**: [link do github](https://github.com/miguelsndc)
 
 Você também pode ver a lista de todos os [colaboradores](https://github.com/marcos-kaio/JuridIA/graphs/contributors) que participaram deste projeto.
-
-## Licença
-
-Este projeto está licenciado sob a Licença MIT. Para mais informações, veja o arquivo `LICENSE` na raiz do projeto.
