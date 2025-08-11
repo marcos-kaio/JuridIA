@@ -96,8 +96,7 @@ router.put('/update-education', requireAuth, async (req, res) => {
       return res.status(404).json({ error: 'Usuário não encontrado.' });
     }
 
-    // atualiza e salva
-    user.escolaridade = escolaridade;
+    user.escolaridade = typeof escolaridade === 'object' ? escolaridade.escolaridade : escolaridade;
     await user.save();
 
     res.json({ message: 'Nível de escolaridade atualizado com sucesso.' });

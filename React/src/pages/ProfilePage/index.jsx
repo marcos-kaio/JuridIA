@@ -104,7 +104,7 @@ const ProfilePage = () => {
 
   const handleUpdateEducation = async () => {
     try {
-      await updateEducation(escolaridade);
+      await updateEducation({ escolaridade });
       showNotification(
         'Nível de escolaridade atualizado com sucesso!',
         'success'
